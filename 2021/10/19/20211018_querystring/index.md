@@ -89,3 +89,6 @@ assert.equal(str, 'a=c');
 Web:  [https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams](https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams)
 
 Node: [https://nodejs.org/api/url.html#url_class_urlsearchparams](https://nodejs.org/api/url.html#url_class_urlsearchparams)
+
+![Banner](/images/wechat.png)
+
