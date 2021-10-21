@@ -1,4 +1,4 @@
-# 防御式编程利器: lodash.get 和 idx
+# npm源码剖析系列-防御式编程利器: lodash.get 和 idx
 
 
 ![Banner](/images/202110/npm_idx_lodash/banner.png)

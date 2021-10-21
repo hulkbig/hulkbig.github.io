@@ -1,4 +1,4 @@
-# URL的参数你真的懂吗？-querystring
+# npm源码剖析系列-URL的参数你真的懂吗？querystring
 
 
 # URL的参数你真的懂吗？-querystring
