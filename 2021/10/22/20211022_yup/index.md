@@ -420,3 +420,6 @@ schema.validate({ name: 'jimmy', age: 11 }).catch(function (err) {
 Yup在设计的时候，还包括了很多增强的功能，最典型的比如cast数据转换等等。但是实际上在使用的时候，我们更聚焦在数据的校验，如果校验之后不合法，需要转化，需要处理，一般会有其他的业务逻辑负责。
 
 把上面的原理大体读懂，常用的例子搞明白，就能掌握Yup。
+
+![Banner](/images/wechat.png)
+
