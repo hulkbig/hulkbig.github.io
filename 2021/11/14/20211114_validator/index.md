@@ -1,4 +1,4 @@
-# validator 字符串判断神器
+# npm源码剖析系列-validator 字符串判断神器
 
 # validator 字符串判断神器
 
