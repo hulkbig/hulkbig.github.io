@@ -4,20 +4,20 @@
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta name=robots content="noodp">
 <meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
-<title>npm源码剖析系列-URL的参数你真的懂吗？querystring - Hulk</title><meta name=Description content="querystring是URL的参数传递方式。https://example.com/path/to/page?name=ferret&color=purple 就是他的数据格式, 但是如果要问问你querystring到底来自哪个标准？具体的处理方式你真的懂吗？可能大部分人都要摇头。这篇文章就能帮到你。"><meta property="og:title" content="npm源码剖析系列-URL的参数你真的懂吗？querystring">
-<meta property="og:description" content="querystring是URL的参数传递方式。https://example.com/path/to/page?name=ferret&color=purple 就是他的数据格式, 但是如果要问问你querystring到底来自哪个标准？具体的处理方式你真的懂吗？可能大部分人都要摇头。这篇文章就能帮到你。">
+<title>你一定要知道的glob - Hulk</title><meta name=Description content="LoveIt"><meta property="og:title" content="你一定要知道的glob">
+<meta property="og:description" content="是什么？什么时候用？ glob是npm环境下的一个glob实现，glob是通过通配符来匹配识别一系列文件的工具。比如想匹配当前目录下的所有js">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.bighulk.net/2021/10/19/20211018_querystring/"><meta property="og:image" content="https://blog.bighulk.net/logo.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2021-10-19T01:31:57+08:00">
-<meta property="article:modified_time" content="2021-10-19T01:31:57+08:00">
+<meta property="og:url" content="https://blog.bighulk.net/2021/11/20/20211120_glob/"><meta property="og:image" content="https://blog.bighulk.net/logo.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-11-20T12:16:07+08:00">
+<meta property="article:modified_time" content="2021-11-20T12:16:07+08:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://blog.bighulk.net/logo.png">
-<meta name=twitter:title content="npm源码剖析系列-URL的参数你真的懂吗？querystring">
-<meta name=twitter:description content="querystring是URL的参数传递方式。https://example.com/path/to/page?name=ferret&color=purple 就是他的数据格式, 但是如果要问问你querystring到底来自哪个标准？具体的处理方式你真的懂吗？可能大部分人都要摇头。这篇文章就能帮到你。">
+<meta name=twitter:title content="你一定要知道的glob">
+<meta name=twitter:description content="是什么？什么时候用？ glob是npm环境下的一个glob实现，glob是通过通配符来匹配识别一系列文件的工具。比如想匹配当前目录下的所有js">
 <meta name=application-name content="Hulk">
 <meta name=apple-mobile-web-app-title content="Hulk"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://blog.bighulk.net/2021/10/19/20211018_querystring/><link rel=prev href=https://blog.bighulk.net/2021/10/18/20211018_npm_idx_lodash/><link rel=next href=https://blog.bighulk.net/2021/10/19/20211019_uuid/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"npm源码剖析系列-URL的参数你真的懂吗？querystring","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/blog.bighulk.net\/2021\/10\/19\/20211018_querystring\/"},"image":["https:\/\/blog.bighulk.net\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"npm源码剖析, querystring","wordcount":947,"url":"https:\/\/blog.bighulk.net\/2021\/10\/19\/20211018_querystring\/","datePublished":"2021-10-19T01:31:57+08:00","dateModified":"2021-10-19T01:31:57+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.\n","publisher":{"@type":"Organization","name":"Hulk","logo":"https:\/\/blog.bighulk.net\/images\/avatar.png"},"author":{"@type":"Person","name":"Hulk"},"description":"querystring是URL的参数传递方式。https://example.com/path/to/page?name=ferret\u0026color=purple 就是他的数据格式, 但是如果要问问你querystring到底来自哪个标准？具体的处理方式你真的懂吗？可能大部分人都要摇头。这篇文章就能帮到你。"}</script></head>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://blog.bighulk.net/2021/11/20/20211120_glob/><link rel=prev href=https://blog.bighulk.net/2021/11/14/20211114_validator/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"你一定要知道的glob","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/blog.bighulk.net\/2021\/11\/20\/20211120_glob\/"},"image":["https:\/\/blog.bighulk.net\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"npm源码剖析, glob, node","wordcount":701,"url":"https:\/\/blog.bighulk.net\/2021\/11\/20\/20211120_glob\/","datePublished":"2021-11-20T12:16:07+08:00","dateModified":"2021-11-20T12:16:07+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.\n","publisher":{"@type":"Organization","name":"Hulk","logo":"https:\/\/blog.bighulk.net\/images\/avatar.png"},"author":{"@type":"Person","name":"Hulk"},"description":""}</script></head>
 <body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
@@ -83,10 +83,10 @@
 <div class=container><div class=toc id=toc-auto>
 <h2 class=toc-title>目录</h2>
 <div class=toc-content id=toc-content-auto></div>
-</div><article class="page single"><h1 class="single-title animated flipInX">npm源码剖析系列-URL的参数你真的懂吗？querystring</h1><div class=post-meta>
+</div><article class="page single"><h1 class="single-title animated flipInX">你一定要知道的glob</h1><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=https://blog.bighulk.net title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw"></i>Hulk</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/npm%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/><i class="far fa-folder fa-fw"></i>npm源码剖析</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-10-19>2021-10-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 947 字&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;<span id=/2021/10/19/20211018_querystring/ class=leancloud_visitors data-flag-title=npm源码剖析系列-URL的参数你真的懂吗？querystring>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-11-20>2021-11-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 701 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;<span id=/2021/11/20/20211120_glob/ class=leancloud_visitors data-flag-title=你一定要知道的glob>
 <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
 </span>&nbsp;</div>
 </div><div class="details toc" id=toc-static kept>
@@ -96,26 +96,46 @@
 </div>
 <div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
 <ul>
-<li><a href=#背景>背景</a>
+<li><a href=#是什么什么时候用>是什么？什么时候用？</a></li>
+<li><a href=#安装和使用>安装和使用</a>
 <ul>
-<li><a href=#qs>qs</a></li>
+<li><a href=#安装和使用-1>安装和使用</a></li>
+</ul>
+</li>
+<li><a href=#glob>glob</a>
+<ul>
+<li><a href=#如何方便的测试glob>如何方便的测试glob</a></li>
 </ul>
 </li>
 </ul>
 </nav></div>
-</div><div class=content id=content><h1 id=url的参数你真的懂吗-querystring>URL的参数你真的懂吗？-querystring</h1>
+</div><div class=content id=content><h2 id=是什么什么时候用>是什么？什么时候用？</h2>
+<p>glob是npm环境下的一个glob实现，glob是通过通配符来匹配识别一系列文件的工具。比如想匹配当前目录下的所有js文件，可以非常简单的通过以下方法获取:</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=nx>glob</span><span class=p>(</span><span class=s2>&#34;**/*.js&#34;</span><span class=p>,</span> <span class=p>(</span><span class=nx>err</span><span class=p>,</span> <span class=nx>files</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>JSON</span><span class=p>.</span><span class=nx>stringify</span><span class=p>(</span><span class=nx>files</span><span class=p>));</span>
+<span class=p>})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果不适用glob，那就需要写特别复杂的正则工具，费事费力，还容易出现问题。所以glob是Node下一个非常重要的工具，我们都应该掌握。</p>
+<h2 id=安装和使用>安装和使用</h2>
+<h3 id=安装和使用-1>安装和使用</h3>
+<p><strong>安装</strong></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-html data-lang=html>https://example.com/path/to/page?name=ferret<span class=err>&amp;</span>color=purple
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>npm i glob
 </code></pre></td></tr></table>
 </div>
-</div><p>大家都熟悉，querystring是URL的参数传递方式。上面就是他的数据格式。</p>
-<p>但是如果要问问你querystring到底来自哪个标准？具体的处理方式你真的懂吗？可能大部分人都要摇头。这篇文章就能帮到你。</p>
-<h2 id=背景>背景</h2>
-<p>querystring主要来自URL标准，URL全称为Uniform Resource Locators，统一资源定位符。Web是其最常见的使用场景，除此之外，ftp、ssh等协议也是基于这些标准来使用的，举个例子。</p>
+</div><p><strong>使用</strong></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
@@ -125,111 +145,106 @@
 </span><span class=lnt>5
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-html data-lang=html># Web URL
-https://example.com/path/to/page?name=ferret<span class=err>&amp;</span>color=purple
+<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kd>var</span> <span class=nx>glob</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s2>&#34;glob&#34;</span><span class=p>)</span>
 
-# Ftp URL
-ftp://test:test@192.168.0.1:21/profile
+<span class=c1>// options is optional
+</span><span class=c1></span><span class=nx>glob</span><span class=p>(</span><span class=s2>&#34;**/*.js&#34;</span><span class=p>,</span> <span class=nx>options</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>er</span><span class=p>,</span> <span class=nx>files</span><span class=p>)</span> <span class=p>{</span>
+<span class=p>})</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>URL是一个标准，主要有两个版本:</p>
-<p>rfc1738: <a href=https://datatracker.ietf.org/doc/html/rfc1738 target=_blank rel="noopener noreffer">https://datatracker.ietf.org/doc/html/rfc1738</a></p>
-<p>rfc3986: <a href=https://datatracker.ietf.org/doc/html/rfc3986 target=_blank rel="noopener noreffer">https://datatracker.ietf.org/doc/html/rfc3986</a></p>
-<p>querystring就来自这个URL标准，querystring主要处理两部分:</p>
-<ol>
-<li>数据传输格式: <code>paramA=valueA&paramB=valueB</code></li>
-<li>数据的编码解码: 1)预留字符 # : 2) 特殊字符转码 <code>SPACE -> 0x20</code></li>
-</ol>
-<p>qs库呢，就是这两部分逻辑的具体实现。那么刚刚提到了rfc1738和rfc3986，在querystring方便主要是对 <code>SPACE %20</code> 的处理方式不同，rfc1738 <code>%20-> +</code>, rfc3986保留 <code>%20</code></p>
-<p><strong>数据传输格式</strong></p>
+</div><p>glob工具本身的用法非常简洁，其实掌握这个工具的重点在于学会glob本身的规则，那接下来就一起继续。</p>
+<h2 id=glob>glob</h2>
+<p>前面提到，glob起源于Unix，通过通配符的方式去匹配文件，通配符的掌握也是理解glob的重点。一般而言，主要需要掌握以下的语法：</p>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>Pattern</th>
+<th style=text-align:left>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>*</td>
+<td style=text-align:left>匹配任何字符(包括空白)</td>
+</tr>
+<tr>
+<td style=text-align:left>？</td>
+<td style=text-align:left>匹配一个字符</td>
+</tr>
+<tr>
+<td style=text-align:left>[&mldr;]</td>
+<td style=text-align:left>类似正则表达式，匹配一系列字符; 如果第一个字符为!/^则表示匹配取反。</td>
+</tr>
+<tr>
+<td style=text-align:left>!(pattern|pattern|pattern)</td>
+<td style=text-align:left>任何不命中patterns</td>
+</tr>
+<tr>
+<td style=text-align:left>?(pattern|pattern|pattern)</td>
+<td style=text-align:left>任何只命中1个patterns</td>
+</tr>
+<tr>
+<td style=text-align:left>+(pattern|pattern|pattern)</td>
+<td style=text-align:left>命中1个或者多个pattern</td>
+</tr>
+<tr>
+<td style=text-align:left>*(a|b|c)</td>
+<td style=text-align:left>匹配0个或者多个pattern，没有什么实际意义</td>
+</tr>
+<tr>
+<td style=text-align:left>@(pattern|pat*|patterN)</td>
+<td style=text-align:left>匹配其中任何一个pattern</td>
+</tr>
+<tr>
+<td style=text-align:left>**</td>
+<td style=text-align:left>匹配中间任意子目录</td>
+</tr>
+<tr>
+<td style=text-align:left>dot(.)</td>
+<td style=text-align:left>如果pattern中有.作为起始符，那么默认情况下，glob的表达式不会生效，除非在表达式中也有点号.作为其开始。</td>
+</tr>
+</tbody>
+</table>
+<h3 id=如何方便的测试glob>如何方便的测试glob</h3>
+<p>就像开发正则一样，我们需要对设计的glob的表达式进行测试，哪种方法最为常见呢？</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-html data-lang=html>field1=value1<span class=err>&amp;</span>field2=value2<span class=err>&amp;</span>field3=value3...
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nb>echo</span> *.js
 </code></pre></td></tr></table>
 </div>
-</div><p>当然可能有的场景也会传输一些特殊的字符，比如JSON、数组等等，但是一般大家在使用过程中，都会先encode，变成普通的字符串；解码的时候再进行反向操作。</p>
-<p><strong>数据的编码解码</strong></p>
-<p>我们不去读常常的RFC标准了，在Wiki上可以找到如下的编解码定义:</p>
+</div><p>没错，只要打开Terminal，输入 <code>echo *.js</code> 就可以显示当前目录下的所有js文件。无需额外以来，也不需要额外的编码。</p>
+<p><strong>几个glob的例子</strong></p>
 <ol>
-<li>Characters that cannot be converted to the correct charset are replaced with HTML numeric character references[11]</li>
-<li>SPACE is encoded as &lsquo;+&rsquo; or &lsquo;%20&rsquo;</li>
-<li>Letters (A–Z and a–z), numbers (0–9) and the characters &lsquo;~&rsquo;,'-','.' and &lsquo;_&rsquo; are left as-is</li>
-<li>
-<ul>
-<li>is encoded by %2B</li>
-</ul>
-</li>
-<li>All other characters are encoded as a %HH hexadecimal representation with any non-ASCII characters first encoded as UTF-8 (or other specified encoding)</li>
+<li>匹配当前目录下的js文件 <code>*.js</code></li>
+<li>匹配当前目录及其子目录下所有的js文件 <code>**/*.js</code></li>
+<li>匹配子目录下所有js文件 <code>./*/**/*.js</code></li>
 </ol>
-<p>用大白话呢就是下面这个，注意步骤2中关于SPACE空格的处理，就是两个不同协议的区别。</p>
-<ol>
-<li>如果某个字符编码不能转成对应的字符，那么就使用数字的替代表示(数学字符等)</li>
-<li>空白SPACE，转成 + 或者 %20 ( + 的ASCII编码为 0x20)</li>
-<li>A-z a-z 0-9 ~ - . _ 这些字符保留</li>
-<li>
-<ul>
-<li>转为 %2B</li>
-</ul>
-</li>
-<li>其他剩余字符，转为%HH的十六进制表示</li>
-</ol>
-<h3 id=qs>qs</h3>
-<p>回到qs这个依赖库，就是对上述操作进行了封装。当然qs本身在对象数据的传输、解析(深度控制等)、数组等做了很多工作，但是实际上用的都比较少。</p>
-<p><strong>使用</strong></p>
-<p>举个官方的例子</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span><span class=lnt>8
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kd>var</span> <span class=nx>qs</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;qs&#39;</span><span class=p>);</span>
-<span class=kd>var</span> <span class=nx>assert</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;assert&#39;</span><span class=p>);</span>
-
-<span class=kd>var</span> <span class=nx>obj</span> <span class=o>=</span> <span class=nx>qs</span><span class=p>.</span><span class=nx>parse</span><span class=p>(</span><span class=s1>&#39;a=c&#39;</span><span class=p>);</span>
-<span class=nx>assert</span><span class=p>.</span><span class=nx>deepEqual</span><span class=p>(</span><span class=nx>obj</span><span class=p>,</span> <span class=p>{</span> <span class=nx>a</span><span class=o>:</span> <span class=s1>&#39;c&#39;</span> <span class=p>});</span>
-
-<span class=kd>var</span> <span class=nx>str</span> <span class=o>=</span> <span class=nx>qs</span><span class=p>.</span><span class=nx>stringify</span><span class=p>(</span><span class=nx>obj</span><span class=p>);</span>
-<span class=nx>assert</span><span class=p>.</span><span class=nx>equal</span><span class=p>(</span><span class=nx>str</span><span class=p>,</span> <span class=s1>&#39;a=c&#39;</span><span class=p>);</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>What&rsquo;s More</strong></p>
-<p>在面向IE等老破浏览器编程的时候，其实这种库是特别有价值的，但是现代浏览器和Node都提供了相似的内置API，可以直接使用</p>
-<p>Web: <a href=https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams target=_blank rel="noopener noreffer">https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams</a></p>
-<p>Node: <a href=https://nodejs.org/api/url.html#url_class_urlsearchparams target=_blank rel="noopener noreffer">https://nodejs.org/api/url.html#url_class_urlsearchparams</a></p>
 <p><img class=lazyload src=/svg/loading.min.svg data-src=/images/wechat.png data-srcset="/images/wechat.png, /images/wechat.png 1.5x, /images/wechat.png 2x" data-sizes=auto alt=/images/wechat.png title=Banner></p>
 </div><div class=post-footer id=post-footer>
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>更新于 2021-10-19</span>
+<span>更新于 2021-11-20</span>
 </div>
 <div class=post-info-license></div>
 </div>
 <div class=post-info-line>
 <div class=post-info-md></div>
 <div class=post-info-share>
-<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://blog.bighulk.net/2021/10/19/20211018_querystring/ data-title=npm源码剖析系列-URL的参数你真的懂吗？querystring data-hashtags=npm源码剖析,querystring><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://blog.bighulk.net/2021/10/19/20211018_querystring/ data-hashtag=npm源码剖析><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://blog.bighulk.net/2021/10/19/20211018_querystring/ data-title=npm源码剖析系列-URL的参数你真的懂吗？querystring><i class="fab fa-hacker-news fa-fw"></i></a><a href=javascript:void(0); title="分享到 Pocket" data-sharer=pocket data-url=https://blog.bighulk.net/2021/10/19/20211018_querystring/><i class="fab fa-get-pocket fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://blog.bighulk.net/2021/10/19/20211018_querystring/ data-title=npm源码剖析系列-URL的参数你真的懂吗？querystring><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 百度" data-sharer=baidu data-url=https://blog.bighulk.net/2021/10/19/20211018_querystring/ data-title=npm源码剖析系列-URL的参数你真的懂吗？querystring><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://blog.bighulk.net/2021/10/19/20211018_querystring/ data-title=npm源码剖析系列-URL的参数你真的懂吗？querystring><i class="fab fa-evernote fa-fw"></i></a></span>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://blog.bighulk.net/2021/11/20/20211120_glob/ data-title=你一定要知道的glob data-hashtags=npm源码剖析,glob,node><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://blog.bighulk.net/2021/11/20/20211120_glob/ data-hashtag=npm源码剖析><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://blog.bighulk.net/2021/11/20/20211120_glob/ data-title=你一定要知道的glob><i class="fab fa-hacker-news fa-fw"></i></a><a href=javascript:void(0); title="分享到 Pocket" data-sharer=pocket data-url=https://blog.bighulk.net/2021/11/20/20211120_glob/><i class="fab fa-get-pocket fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://blog.bighulk.net/2021/11/20/20211120_glob/ data-title=你一定要知道的glob><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 百度" data-sharer=baidu data-url=https://blog.bighulk.net/2021/11/20/20211120_glob/ data-title=你一定要知道的glob><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://blog.bighulk.net/2021/11/20/20211120_glob/ data-title=你一定要知道的glob><i class="fab fa-evernote fa-fw"></i></a></span>
 </div>
 </div>
 </div>
 <div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/npm%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/>npm源码剖析</a>,&nbsp;<a href=/tags/querystring/>querystring</a></section>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/npm%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/>npm源码剖析</a>,&nbsp;<a href=/tags/glob/>glob</a>,&nbsp;<a href=/tags/node/>node</a></section>
 <section>
 <span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span>
 </section>
 </div>
-<div class=post-nav><a href=/2021/10/18/20211018_npm_idx_lodash/ class=prev rel=prev title="npm源码剖析系列-防御式编程利器: lodash.get 和 idx"><i class="fas fa-angle-left fa-fw"></i>npm源码剖析系列-防御式编程利器: lodash.get 和 idx</a>
-<a href=/2021/10/19/20211019_uuid/ class=next rel=next title=npm源码剖析系列-UUID到底是什么?>npm源码剖析系列-UUID到底是什么?<i class="fas fa-angle-right fa-fw"></i></a></div>
+<div class=post-nav><a href=/2021/11/14/20211114_validator/ class=prev rel=prev title="npm源码剖析系列-validator 字符串判断神器"><i class="fas fa-angle-left fa-fw"></i>npm源码剖析系列-validator 字符串判断神器</a></div>
 </div>
 <div id=comments><div id=valine class=comment></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.
