@@ -1,137 +1,17 @@
-<!doctype html><html lang=zh-cn>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=robots content="noodp">
-<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
-<title>npm源码剖析系列-Schema校验神器之Yup - Hulk</title><meta name=Description content="LoveIt"><meta property="og:title" content="npm源码剖析系列-Schema校验神器之Yup">
-<meta property="og:description" content="npm源码剖析系列-Schema校验神器之Yup 一句话概括 yup是一个schema校验工具库。 前端用户表单的时候，我们经验需要在前后端校验用">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.bighulk.net/2021/10/22/20211022_yup/"><meta property="og:image" content="https://blog.bighulk.net/logo.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2021-10-22T00:09:09+08:00">
-<meta property="article:modified_time" content="2021-10-22T00:09:09+08:00">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://blog.bighulk.net/logo.png">
-<meta name=twitter:title content="npm源码剖析系列-Schema校验神器之Yup">
-<meta name=twitter:description content="npm源码剖析系列-Schema校验神器之Yup 一句话概括 yup是一个schema校验工具库。 前端用户表单的时候，我们经验需要在前后端校验用">
-<meta name=application-name content="Hulk">
-<meta name=apple-mobile-web-app-title content="Hulk"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://blog.bighulk.net/2021/10/22/20211022_yup/><link rel=prev href=https://blog.bighulk.net/2021/10/19/20211019_uuid/><link rel=next href=https://blog.bighulk.net/2021/11/14/20211114_validator/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"npm源码剖析系列-Schema校验神器之Yup","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/blog.bighulk.net\/2021\/10\/22\/20211022_yup\/"},"image":["https:\/\/blog.bighulk.net\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"npm源码剖析, yup, schema, validator","wordcount":3049,"url":"https:\/\/blog.bighulk.net\/2021\/10\/22\/20211022_yup\/","datePublished":"2021-10-22T00:09:09+08:00","dateModified":"2021-10-22T00:09:09+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.\n","publisher":{"@type":"Organization","name":"Hulk","logo":"https:\/\/blog.bighulk.net\/images\/avatar.png"},"author":{"@type":"Person","name":"Hulk"},"description":""}</script></head>
-<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
-<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
-<div class=header-wrapper>
-<div class=header-title>
-<a href=/ title=Hulk><span class=header-title-pre><i class="far fa-kiss-wink-heart fa-fw"></i></span>Hulk</a>
-</div>
-<div class=menu>
-<div class=menu-inner><a class=menu-item href=/posts/> 所有文章 </a><a class=menu-item href=/tags/> 标签 </a><a class=menu-item href=/categories/> 分类 </a><a class=menu-item href=/> 关于 </a><a class=menu-item href=https://github.com/hulkbig title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>npm源码剖析系列-Schema校验神器之Yup - Hulk</title><meta name=Description content="LoveIt"><meta property="og:title" content="npm源码剖析系列-Schema校验神器之Yup"><meta property="og:description" content="npm源码剖析系列-Schema校验神器之Yup 一句话概括 yup是一个schema校验工具库。 前端用户表单的时候，我们经验需要在前后端校验用"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.bighulk.net/2021/10/22/20211022_yup/"><meta property="og:image" content="https://blog.bighulk.net/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-10-22T00:09:09+08:00"><meta property="article:modified_time" content="2021-10-22T00:09:09+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://blog.bighulk.net/logo.png"><meta name=twitter:title content="npm源码剖析系列-Schema校验神器之Yup"><meta name=twitter:description content="npm源码剖析系列-Schema校验神器之Yup 一句话概括 yup是一个schema校验工具库。 前端用户表单的时候，我们经验需要在前后端校验用"><meta name=application-name content="Hulk"><meta name=apple-mobile-web-app-title content="Hulk"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://blog.bighulk.net/2021/10/22/20211022_yup/><link rel=prev href=https://blog.bighulk.net/2021/10/19/20211019_uuid/><link rel=next href=https://blog.bighulk.net/2021/11/14/20211114_validator/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"npm源码剖析系列-Schema校验神器之Yup","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/blog.bighulk.net\/2021\/10\/22\/20211022_yup\/"},"image":["https:\/\/blog.bighulk.net\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"npm源码剖析, yup, schema, validator","wordcount":3048,"url":"https:\/\/blog.bighulk.net\/2021\/10\/22\/20211022_yup\/","datePublished":"2021-10-22T00:09:09+08:00","dateModified":"2021-10-22T00:09:09+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.\n","publisher":{"@type":"Organization","name":"Hulk","logo":"https:\/\/blog.bighulk.net\/images\/avatar.png"},"author":{"@type":"Person","name":"Hulk"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Hulk><span class=header-title-pre><i class="far fa-kiss-wink-heart fa-fw"></i></span>Hulk</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/>关于 </a><a class=menu-item href=https://github.com/hulkbig title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
 <input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索>
-<i class="fas fa-search fa-fw"></i>
-</a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空>
-<i class="fas fa-times-circle fa-fw"></i>
-</a>
-<span class="search-button search-loading" id=search-loading-desktop>
-<i class="fas fa-spinner fa-fw fa-spin"></i>
-</span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
-<i class="fas fa-adjust fa-fw"></i>
-</a>
-</div>
-</div>
-</div>
-</header><header class=mobile id=header-mobile>
-<div class=header-container>
-<div class=header-wrapper>
-<div class=header-title>
-<a href=/ title=Hulk><span class=header-title-pre><i class="far fa-kiss-wink-heart fa-fw"></i></span>Hulk</a>
-</div>
-<div class=menu-toggle id=menu-toggle-mobile>
-<span></span><span></span><span></span>
-</div>
-</div>
-<div class=menu id=menu-mobile><div class=search-wrapper>
-<div class="search mobile" id=search-mobile>
-<input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
-<i class="fas fa-search fa-fw"></i>
-</a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空>
-<i class="fas fa-times-circle fa-fw"></i>
-</a>
-<span class="search-button search-loading" id=search-loading-mobile>
-<i class="fas fa-spinner fa-fw fa-spin"></i>
-</span>
-</div>
-<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
-取消
-</a>
-</div><a class=menu-item href=/posts/ title>所有文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/ title>关于</a><a class=menu-item href=https://github.com/hulkbig title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
-<i class="fas fa-adjust fa-fw"></i>
-</a></div>
-</div>
-</header>
-<div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div>
-</div>
-<div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div>
-</div>
-<main class=main>
-<div class=container><div class=toc id=toc-auto>
-<h2 class=toc-title>目录</h2>
-<div class=toc-content id=toc-content-auto></div>
-</div><article class="page single"><h1 class="single-title animated flipInX">npm源码剖析系列-Schema校验神器之Yup</h1><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=https://blog.bighulk.net title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw"></i>Hulk</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/npm%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/><i class="far fa-folder fa-fw"></i>npm源码剖析</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-10-22>2021-10-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3049 字&nbsp;
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Hulk><span class=header-title-pre><i class="far fa-kiss-wink-heart fa-fw"></i></span>Hulk</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>所有文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/ title>关于</a><a class=menu-item href=https://github.com/hulkbig title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">npm源码剖析系列-Schema校验神器之Yup</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://blog.bighulk.net title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw"></i>Hulk</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/npm%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/><i class="far fa-folder fa-fw"></i>npm源码剖析</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-10-22>2021-10-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3048 字&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id=/2021/10/22/20211022_yup/ class=leancloud_visitors data-flag-title=npm源码剖析系列-Schema校验神器之Yup>
 <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
-</span>&nbsp;</div>
-</div><div class="details toc" id=toc-static kept>
-<div class="details-summary toc-title">
-<span>目录</span>
-<span><i class="details-icon fas fa-angle-right"></i></span>
-</div>
-<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
-<ul>
-<li><a href=#一句话概括>一句话概括</a></li>
-<li><a href=#源码简析>源码简析</a>
-<ul>
-<li><a href=#整体流程>整体流程</a></li>
-<li><a href=#构建schema>构建Schema</a></li>
-</ul>
-</li>
-<li><a href=#如何使用>如何使用</a>
-<ul>
-<li><a href=#依赖其他字段不同>依赖其他字段不同</a></li>
-<li><a href=#自定义string类型的判断规则>自定义String类型的判断规则</a></li>
-<li><a href=#异步判断>异步判断</a></li>
-<li><a href=#判断其中子元素>判断其中子元素</a></li>
-<li><a href=#输出详细的错误信息>输出详细的错误信息</a></li>
-</ul>
-</li>
-<li><a href=#whats-more>What&rsquo;s more</a></li>
-</ul>
-</nav></div>
-</div><div class=content id=content><h1 id=npm源码剖析系列-schema校验神器之yup>npm源码剖析系列-Schema校验神器之Yup</h1>
-<h2 id=一句话概括>一句话概括</h2>
-<p>yup是一个schema校验工具库。</p>
-<p>前端用户表单的时候，我们经验需要在前后端校验用户的输入。一般而言，因为我们预先知道每个字段的含义，所以可以通过预先针对每一个字段执行条件语句判断是否合法。</p>
-<ol>
-<li>
-<p>但是随着表单字段的增多，结构的复杂，校验规则就会变得复杂起来。如果遇到嵌套数组等情况，校验工作会变得更加复杂棘手。</p>
-</li>
-<li>
-<p>此外，如果我们的校验逻辑和业务逻辑耦合在一起，当校验规则需要调整的时候，需要进行大量的修改和回归操作。</p>
-</li>
-</ol>
-<p>因此，将校验工作抽离为单独的组件，并且支持灵活的配置规则，就变得特别重要。那yup的出现，就在于解决这些问题。</p>
-<p>yup的使用非常简单，举个例子:</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#一句话概括>一句话概括</a></li><li><a href=#源码简析>源码简析</a><ul><li><a href=#整体流程>整体流程</a></li><li><a href=#构建schema>构建Schema</a></li></ul></li><li><a href=#如何使用>如何使用</a><ul><li><a href=#依赖其他字段不同>依赖其他字段不同</a></li><li><a href=#自定义string类型的判断规则>自定义String类型的判断规则</a></li><li><a href=#异步判断>异步判断</a></li><li><a href=#判断其中子元素>判断其中子元素</a></li><li><a href=#输出详细的错误信息>输出详细的错误信息</a></li></ul></li><li><a href=#whats-more>What&rsquo;s more</a></li></ul></nav></div></div><div class=content id=content><h1 id=npm源码剖析系列-schema校验神器之yup>npm源码剖析系列-Schema校验神器之Yup</h1><h2 id=一句话概括>一句话概括</h2><p>yup是一个schema校验工具库。</p><p>前端用户表单的时候，我们经验需要在前后端校验用户的输入。一般而言，因为我们预先知道每个字段的含义，所以可以通过预先针对每一个字段执行条件语句判断是否合法。</p><ol><li><p>但是随着表单字段的增多，结构的复杂，校验规则就会变得复杂起来。如果遇到嵌套数组等情况，校验工作会变得更加复杂棘手。</p></li><li><p>此外，如果我们的校验逻辑和业务逻辑耦合在一起，当校验规则需要调整的时候，需要进行大量的修改和回归操作。</p></li></ol><p>因此，将校验工作抽离为单独的组件，并且支持灵活的配置规则，就变得特别重要。那yup的出现，就在于解决这些问题。</p><p>yup的使用非常简单，举个例子:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -145,41 +25,21 @@
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>required</span><span class=p>(),</span>
-  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>required</span><span class=p>().</span><span class=nx>positive</span><span class=p>().</span><span class=nx>integer</span><span class=p>(),</span>
-  <span class=nx>email</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>email</span><span class=p>(),</span>
-  <span class=nx>website</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>url</span><span class=p>(),</span>
-  <span class=nx>createdOn</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>date</span><span class=p>().</span><span class=k>default</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
-    <span class=k>return</span> <span class=k>new</span> <span class=nb>Date</span><span class=p>();</span>
-  <span class=p>}),</span>
-<span class=p>});</span>
-
-<span class=kr>const</span> <span class=nx>validated</span> <span class=o>=</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateSync</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Hulk&#39;</span><span class=p>,</span>
-  <span class=nx>age</span><span class=o>:</span> <span class=mi>18</span><span class=p>,</span>
-<span class=p>});</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>上述schema就是一个对用户信息的校验逻辑，非常已于读取，可以很容易了解到各个字段的含义:</p>
-<ul>
-<li>name: 字符串，必须</li>
-<li>age: 数字、必须、整形、正数</li>
-<li>email: E-mail类型、可选</li>
-<li>website: Url类型、类型</li>
-<li>createdOn: 日期类型、可选、支持配置默认</li>
-</ul>
-<p>当然实际上，yup支持的逻辑要复杂的多，具体在源码中详细分析。实际上还有一个非常常用好用的手段，可以基于yup，添加自己的校验逻辑，输出一个业务特色的字段校验库。</p>
-<h2 id=源码简析>源码简析</h2>
-<p>相比之前的总结，Yup的源码变得复杂起来。从功能入手，Yup就是对用户输入进行Schema的校验。其核心代码也聚焦在这两个部分。</p>
-<p><img class=lazyload src=/svg/loading.min.svg data-src=/images/202110/yup/yup_all.png data-srcset="/images/202110/yup/yup_all.png, /images/202110/yup/yup_all.png 1.5x, /images/202110/yup/yup_all.png 2x" data-sizes=auto alt=/images/202110/yup/yup_all.png title=/images/202110/yup/yup_all.png></p>
-<p>两部分分别是: <strong>构建/编译Schema</strong> 和 <strong>校验Schema</strong>。</p>
-<p><strong>构建</strong> 是我们定义Schema格式的过程，参考我们文章开头的测试代码:</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>required</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>required</span><span class=p>().</span><span class=nx>positive</span><span class=p>().</span><span class=nx>integer</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>email</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>email</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>website</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>url</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>createdOn</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>date</span><span class=p>().</span><span class=k>default</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>new</span> <span class=nb>Date</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>  <span class=p>}),</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>validated</span> <span class=o>=</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateSync</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Hulk&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>age</span><span class=o>:</span> <span class=mi>18</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></td></tr></table></div></div><p>上述schema就是一个对用户信息的校验逻辑，非常已于读取，可以很容易了解到各个字段的含义:</p><ul><li>name: 字符串，必须</li><li>age: 数字、必须、整形、正数</li><li>email: E-mail类型、可选</li><li>website: Url类型、类型</li><li>createdOn: 日期类型、可选、支持配置默认</li></ul><p>当然实际上，yup支持的逻辑要复杂的多，具体在源码中详细分析。实际上还有一个非常常用好用的手段，可以基于yup，添加自己的校验逻辑，输出一个业务特色的字段校验库。</p><h2 id=源码简析>源码简析</h2><p>相比之前的总结，Yup的源码变得复杂起来。从功能入手，Yup就是对用户输入进行Schema的校验。其核心代码也聚焦在这两个部分。</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/202110/yup/yup_all.png data-srcset="/images/202110/yup/yup_all.png, /images/202110/yup/yup_all.png 1.5x, /images/202110/yup/yup_all.png 2x" data-sizes=auto alt=/images/202110/yup/yup_all.png title=/images/202110/yup/yup_all.png></p><p>两部分分别是: <strong>构建/编译Schema</strong> 和 <strong>校验Schema</strong>。</p><p><strong>构建</strong> 是我们定义Schema格式的过程，参考我们文章开头的测试代码:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -188,75 +48,34 @@
 </span><span class=lnt>7
 </span><span class=lnt>8
 </span><span class=lnt>9
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>required</span><span class=p>(),</span>
-  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>required</span><span class=p>().</span><span class=nx>positive</span><span class=p>().</span><span class=nx>integer</span><span class=p>(),</span>
-  <span class=nx>email</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>email</span><span class=p>(),</span>
-  <span class=nx>website</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>url</span><span class=p>(),</span>
-  <span class=nx>createdOn</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>date</span><span class=p>().</span><span class=k>default</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
-    <span class=k>return</span> <span class=k>new</span> <span class=nb>Date</span><span class=p>();</span>
-  <span class=p>}),</span>
-<span class=p>});</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>在上述代码中，我们定义一个用户信息的Schema校验规则。我们可以注意到这么几个细节:</p>
-<ol>
-<li>yup的校验是支持对象，也支持简单的变量</li>
-<li>yup的校验，支持可选和必选</li>
-<li>yup内置了一些数字、字符串、日期等常见的校验格式，对于字符串等内置了常见的email、url等校验规则。</li>
-<li>yup的schema构建，是支持 <strong>链式调用</strong> 的。</li>
-</ol>
-<p>那么校验的过程呢，对比我们的测试代码:</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>required</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>required</span><span class=p>().</span><span class=nx>positive</span><span class=p>().</span><span class=nx>integer</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>email</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>email</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>website</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>url</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>createdOn</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>date</span><span class=p>().</span><span class=k>default</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>new</span> <span class=nb>Date</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>  <span class=p>}),</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></td></tr></table></div></div><p>在上述代码中，我们定义一个用户信息的Schema校验规则。我们可以注意到这么几个细节:</p><ol><li>yup的校验是支持对象，也支持简单的变量</li><li>yup的校验，支持可选和必选</li><li>yup内置了一些数字、字符串、日期等常见的校验格式，对于字符串等内置了常见的email、url等校验规则。</li><li>yup的schema构建，是支持 <strong>链式调用</strong> 的。</li></ol><p>那么校验的过程呢，对比我们的测试代码:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kr>const</span> <span class=nx>validated</span> <span class=o>=</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateSync</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Hulk&#39;</span><span class=p>,</span>
-  <span class=nx>age</span><span class=o>:</span> <span class=mi>18</span><span class=p>,</span>
-<span class=p>});</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>因此对于校验的过程，validateSync是我们的核心切入点。在这里呢，我整理了一份整体的源码框架示意图，可以和大家一块，抓大放小的整理清楚。</p>
-<h3 id=整体流程>整体流程</h3>
-<p><img class=lazyload src=/svg/loading.min.svg data-src=/images/202110/yup/yup_schema.png data-srcset="/images/202110/yup/yup_schema.png, /images/202110/yup/yup_schema.png 1.5x, /images/202110/yup/yup_schema.png 2x" data-sizes=auto alt=/images/202110/yup/yup_schema.png title=/images/202110/yup/yup_schema.png></p>
-<p>读懂了这张图，就能搞清楚Yup的核心思想。通过这个图，我们可以得出以下几个结论。</p>
-<ol>
-<li>Yup的核心功能，均是通过Schema模块导出。而Schema也就是我们前面提到的构建Schema、校验Schema的基础，其物理含义则代表了一系列的规则。</li>
-<li>Yup内置了一些常用的Schema，比如数字、字符串、对象、数组等等，足以覆盖我们常见的场景。</li>
-<li>resolve和validate是其中比较重要的方法。</li>
-</ol>
-<p>那么我们展开来看下。</p>
-<h3 id=构建schema>构建Schema</h3>
-<p><strong>规则的存储</strong></p>
-<p>Yup源码中，类Schema作为规则的核心承载，其源码在src/schema.ts。本小节我们主要看如何构建Schema。直接分析最复杂之一的 <code>object</code> 规则。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kr>const</span> <span class=nx>validated</span> <span class=o>=</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateSync</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Hulk&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>age</span><span class=o>:</span> <span class=mi>18</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></td></tr></table></div></div><p>因此对于校验的过程，validateSync是我们的核心切入点。在这里呢，我整理了一份整体的源码框架示意图，可以和大家一块，抓大放小的整理清楚。</p><h3 id=整体流程>整体流程</h3><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/202110/yup/yup_schema.png data-srcset="/images/202110/yup/yup_schema.png, /images/202110/yup/yup_schema.png 1.5x, /images/202110/yup/yup_schema.png 2x" data-sizes=auto alt=/images/202110/yup/yup_schema.png title=/images/202110/yup/yup_schema.png></p><p>读懂了这张图，就能搞清楚Yup的核心思想。通过这个图，我们可以得出以下几个结论。</p><ol><li>Yup的核心功能，均是通过Schema模块导出。而Schema也就是我们前面提到的构建Schema、校验Schema的基础，其物理含义则代表了一系列的规则。</li><li>Yup内置了一些常用的Schema，比如数字、字符串、对象、数组等等，足以覆盖我们常见的场景。</li><li>resolve和validate是其中比较重要的方法。</li></ol><p>那么我们展开来看下。</p><h3 id=构建schema>构建Schema</h3><p><strong>规则的存储</strong></p><p>Yup源码中，类Schema作为规则的核心承载，其源码在src/schema.ts。本小节我们主要看如何构建Schema。直接分析最复杂之一的 <code>object</code> 规则。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=c1>// 创建Object规则
-</span><span class=c1></span><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>required</span><span class=p>(),</span>
-  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>required</span><span class=p>().</span><span class=nx>positive</span><span class=p>().</span><span class=nx>integer</span><span class=p>(),</span>
-<span class=p>});</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>创建规则对象</strong></p>
-<p>Yup中内置了很对规则，通过 <code>object</code>、 <code>string</code> 、 <code>number</code> 等符号导出。导出的为一个构造方法，也就是当我们调用 <code>object</code> 的时候，本质上调用 <code>ObjectCrate</code>方法，并创建了一个对应的 <code>ObjectSchema</code>对象。相关代码如下</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=c1>// 创建Object规则
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>required</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>required</span><span class=p>().</span><span class=nx>positive</span><span class=p>().</span><span class=nx>integer</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>创建规则对象</strong></p><p>Yup中内置了很对规则，通过 <code>object</code>、 <code>string</code> 、 <code>number</code> 等符号导出。导出的为一个构造方法，也就是当我们调用 <code>object</code> 的时候，本质上调用 <code>ObjectCrate</code>方法，并创建了一个对应的 <code>ObjectSchema</code>对象。相关代码如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -266,25 +85,17 @@
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=c1>// src/index.ts
-</span><span class=c1></span><span class=kr>export</span> <span class=p>{</span>
-  <span class=nx>mixedCreate</span> <span class=nx>as</span> <span class=nx>mixed</span><span class=p>,</span>
-  <span class=nx>objectCreate</span> <span class=nx>as</span> <span class=nx>object</span><span class=p>,</span> <span class=c1>// 导出object方法
-</span><span class=c1></span><span class=p>};</span>
-
-<span class=c1>// src/object.ts
-</span><span class=c1></span><span class=kr>export</span> <span class=kd>function</span> <span class=nx>create</span><span class=p>&lt;</span><span class=nt>TShape</span> <span class=na>extends</span> <span class=na>ObjectShape</span><span class=p>&gt;(</span><span class=nx>spec</span><span class=o>?:</span> <span class=nx>TShape</span><span class=p>)</span> <span class=p>{</span>
-  <span class=k>return</span> <span class=k>new</span> <span class=nx>ObjectSchema</span><span class=p>&lt;</span><span class=nt>TShape</span><span class=p>&gt;(</span><span class=nx>spec</span><span class=p>)</span> <span class=nx>as</span> <span class=nx>OptionalObjectSchema</span><span class=p>&lt;</span><span class=nt>TShape</span><span class=p>&gt;;</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>校验validate</strong></p>
-<p><code>validate</code> 是校验的主入口，这块代码有些复杂，我们先看父类 <code>BaseSchema</code> 的定义</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=c1>// src/index.ts
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kr>export</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>mixedCreate</span> <span class=nx>as</span> <span class=nx>mixed</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>objectCreate</span> <span class=nx>as</span> <span class=nx>object</span><span class=p>,</span> <span class=c1>// 导出object方法
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// src/object.ts
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kr>export</span> <span class=kd>function</span> <span class=nx>create</span><span class=p>&lt;</span><span class=nt>TShape</span> <span class=na>extends</span> <span class=na>ObjectShape</span><span class=p>&gt;(</span><span class=nx>spec</span><span class=o>?:</span> <span class=nx>TShape</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=k>new</span> <span class=nx>ObjectSchema</span><span class=p>&lt;</span><span class=nt>TShape</span><span class=p>&gt;(</span><span class=nx>spec</span><span class=p>)</span> <span class=nx>as</span> <span class=nx>OptionalObjectSchema</span><span class=p>&lt;</span><span class=nt>TShape</span><span class=p>&gt;;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>校验validate</strong></p><p><code>validate</code> 是校验的主入口，这块代码有些复杂，我们先看父类 <code>BaseSchema</code> 的定义</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -329,66 +140,52 @@
 </span><span class=lnt>43
 </span><span class=lnt>44
 </span><span class=lnt>45
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kr>protected</span> <span class=nx>_validate</span><span class=p>(</span>
-    <span class=nx>_value</span><span class=o>:</span> <span class=nx>any</span><span class=p>,</span>
-    <span class=nx>options</span><span class=o>:</span> <span class=nx>InternalOptions</span><span class=p>&lt;</span><span class=nt>TContext</span><span class=p>&gt;</span> <span class=o>=</span> <span class=p>{},</span>
-    <span class=nx>cb</span><span class=o>:</span> <span class=nx>Callback</span><span class=p>,</span>
-  <span class=p>)</span><span class=o>:</span> <span class=k>void</span> <span class=p>{</span>
-    <span class=kd>let</span> <span class=nx>value</span> <span class=o>=</span> <span class=nx>_value</span><span class=p>;</span>
-    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>strict</span><span class=p>)</span> <span class=p>{</span>
-      <span class=c1>// this._validating = true;
-</span><span class=c1></span>      <span class=nx>value</span> <span class=o>=</span> <span class=k>this</span><span class=p>.</span><span class=nx>_cast</span><span class=p>(</span><span class=nx>value</span><span class=p>,</span> <span class=p>{</span> <span class=nx>assert</span><span class=o>:</span> <span class=kc>false</span><span class=p>,</span> <span class=p>...</span><span class=nx>options</span> <span class=p>});</span>
-      <span class=c1>// this._validating = false;
-</span><span class=c1></span>    <span class=p>}</span>
-    <span class=kd>let</span> <span class=nx>initialTests</span> <span class=o>=</span> <span class=p>[];</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_typeError</span><span class=p>)</span> <span class=nx>initialTests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_typeError</span><span class=p>);</span>
-
-    <span class=kd>let</span> <span class=nx>finalTests</span><span class=o>:</span> <span class=nx>any</span><span class=p>[]</span> <span class=o>=</span> <span class=p>[];</span>
-    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_whitelistError</span><span class=p>)</span> <span class=nx>finalTests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_whitelistError</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_blacklistError</span><span class=p>)</span> <span class=nx>finalTests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_blacklistError</span><span class=p>);</span>
-
-    <span class=nx>runTests</span><span class=p>(</span>
-      <span class=p>{</span>
-        <span class=nx>args</span><span class=p>,</span>
-        <span class=nx>value</span><span class=p>,</span>
-        <span class=nx>path</span><span class=p>,</span>
-        <span class=nx>sync</span><span class=p>,</span>
-        <span class=nx>tests</span><span class=o>:</span> <span class=nx>initialTests</span><span class=p>,</span>
-        <span class=nx>endEarly</span><span class=o>:</span> <span class=nx>abortEarly</span><span class=p>,</span>
-      <span class=p>},</span>
-      <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
-        <span class=k>if</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=k>return</span> <span class=k>void</span> <span class=nx>cb</span><span class=p>(</span><span class=nx>err</span><span class=p>,</span> <span class=nx>value</span><span class=p>);</span>
-
-        <span class=nx>runTests</span><span class=p>(</span>
-          <span class=p>{</span>
-            <span class=nx>tests</span><span class=o>:</span> <span class=k>this</span><span class=p>.</span><span class=nx>tests</span><span class=p>.</span><span class=nx>concat</span><span class=p>(</span><span class=nx>finalTests</span><span class=p>),</span>
-            <span class=nx>args</span><span class=p>,</span>
-            <span class=nx>path</span><span class=p>,</span>
-            <span class=nx>sync</span><span class=p>,</span>
-            <span class=nx>value</span><span class=p>,</span>
-            <span class=nx>endEarly</span><span class=o>:</span> <span class=nx>abortEarly</span><span class=p>,</span>
-          <span class=p>},</span>
-          <span class=nx>cb</span><span class=p>,</span>
-        <span class=p>);</span>
-      <span class=p>},</span>
-    <span class=p>);</span>
-  <span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>看着似懂非懂，其实整体上可以分为以下3步:</p>
-<ol>
-<li>整理数据，比如上述就整理了 <code>initialTests</code> 、 <code>finalTests</code></li>
-<li>调用runTests，先验证 <code>initialTest</code> 规则是否满足；如果不满足，直接error callback.</li>
-<li>构建新的tests集合， <code>tests = this.tests.concat(finalTest)</code> ，然后重复步骤2</li>
-</ol>
-<p>可以看出来，关键有两个元素，一个是测试集合 <code>tests</code>，另一个是 <code>runTest</code> 方法。 <code>runTest</code> 方法比较简单，不在赘述，重点看下 <code>tests</code> 测试集合如何生成。</p>
-<p>通过 <code>BaseSchema</code> 代码可知， <code>test</code>为一个数组，当某个具体的Type在定义某些边界约束的时候，会操作 <code>test</code> 变量，具体 <code>boolean</code> 类型的例子</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kr>protected</span> <span class=nx>_validate</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=nx>_value</span><span class=o>:</span> <span class=nx>any</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>options</span><span class=o>:</span> <span class=nx>InternalOptions</span><span class=p>&lt;</span><span class=nt>TContext</span><span class=p>&gt;</span> <span class=o>=</span> <span class=p>{},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>cb</span><span class=o>:</span> <span class=nx>Callback</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=p>)</span><span class=o>:</span> <span class=k>void</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>let</span> <span class=nx>value</span> <span class=o>=</span> <span class=nx>_value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>strict</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=c1>// this._validating = true;
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=nx>value</span> <span class=o>=</span> <span class=k>this</span><span class=p>.</span><span class=nx>_cast</span><span class=p>(</span><span class=nx>value</span><span class=p>,</span> <span class=p>{</span> <span class=nx>assert</span><span class=o>:</span> <span class=kc>false</span><span class=p>,</span> <span class=p>...</span><span class=nx>options</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>      <span class=c1>// this._validating = false;
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=kd>let</span> <span class=nx>initialTests</span> <span class=o>=</span> <span class=p>[];</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_typeError</span><span class=p>)</span> <span class=nx>initialTests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_typeError</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>let</span> <span class=nx>finalTests</span><span class=o>:</span> <span class=nx>any</span><span class=p>[]</span> <span class=o>=</span> <span class=p>[];</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_whitelistError</span><span class=p>)</span> <span class=nx>finalTests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_whitelistError</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_blacklistError</span><span class=p>)</span> <span class=nx>finalTests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=nx>_blacklistError</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nx>runTests</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>      <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>args</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>value</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>path</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>sync</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>tests</span><span class=o>:</span> <span class=nx>initialTests</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>endEarly</span><span class=o>:</span> <span class=nx>abortEarly</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=p>},</span>
+</span></span><span class=line><span class=cl>      <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=k>return</span> <span class=k>void</span> <span class=nx>cb</span><span class=p>(</span><span class=nx>err</span><span class=p>,</span> <span class=nx>value</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nx>runTests</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>          <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>tests</span><span class=o>:</span> <span class=k>this</span><span class=p>.</span><span class=nx>tests</span><span class=p>.</span><span class=nx>concat</span><span class=p>(</span><span class=nx>finalTests</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=nx>args</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nx>path</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nx>sync</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nx>value</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nx>endEarly</span><span class=o>:</span> <span class=nx>abortEarly</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=p>},</span>
+</span></span><span class=line><span class=cl>          <span class=nx>cb</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>看着似懂非懂，其实整体上可以分为以下3步:</p><ol><li>整理数据，比如上述就整理了 <code>initialTests</code> 、 <code>finalTests</code></li><li>调用runTests，先验证 <code>initialTest</code> 规则是否满足；如果不满足，直接error callback.</li><li>构建新的tests集合， <code>tests = this.tests.concat(finalTest)</code> ，然后重复步骤2</li></ol><p>可以看出来，关键有两个元素，一个是测试集合 <code>tests</code>，另一个是 <code>runTest</code> 方法。 <code>runTest</code> 方法比较简单，不在赘述，重点看下 <code>tests</code> 测试集合如何生成。</p><p>通过 <code>BaseSchema</code> 代码可知， <code>test</code>为一个数组，当某个具体的Type在定义某些边界约束的时候，会操作 <code>test</code> 变量，具体 <code>boolean</code> 类型的例子</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -401,27 +198,20 @@
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=nx>isTrue</span><span class=p>(</span>
-    <span class=nx>message</span> <span class=o>=</span> <span class=nx>locale</span><span class=p>.</span><span class=nx>isValue</span><span class=p>,</span>
-  <span class=p>)</span><span class=o>:</span> <span class=nx>BooleanSchema</span><span class=p>&lt;</span><span class=nt>TType</span> <span class=err>|</span> <span class=na>true</span><span class=err>,</span> <span class=na>TContext</span><span class=err>,</span> <span class=na>true</span> <span class=err>|</span> <span class=na>Optionals</span><span class=err>&lt;</span><span class=na>TOut</span><span class=p>&gt;</span><span class=o>&gt;</span> <span class=p>{</span>
-    <span class=k>return</span> <span class=k>this</span><span class=p>.</span><span class=nx>test</span><span class=p>({</span>
-      <span class=nx>message</span><span class=p>,</span>
-      <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;is-value&#39;</span><span class=p>,</span>
-      <span class=nx>exclusive</span><span class=o>:</span> <span class=kc>true</span><span class=p>,</span>
-      <span class=nx>params</span><span class=o>:</span> <span class=p>{</span> <span class=nx>value</span><span class=o>:</span> <span class=s1>&#39;true&#39;</span> <span class=p>},</span>
-      <span class=nx>test</span><span class=p>(</span><span class=nx>value</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>return</span> <span class=nx>isAbsent</span><span class=p>(</span><span class=nx>value</span><span class=p>)</span> <span class=o>||</span> <span class=nx>value</span> <span class=o>===</span> <span class=kc>true</span><span class=p>;</span>
-      <span class=p>},</span>
-    <span class=p>})</span> <span class=nx>as</span> <span class=nx>any</span><span class=p>;</span>
-  <span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>观察上述代码，我们可以通过 <code>yup.bool().isTrue()</code> 来引用。我们可以看到，其调用了 <code>BaseSchema</code> 的 <code>test</code> 方法，相关一些关键的实现如下</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=nx>isTrue</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=nx>message</span> <span class=o>=</span> <span class=nx>locale</span><span class=p>.</span><span class=nx>isValue</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=p>)</span><span class=o>:</span> <span class=nx>BooleanSchema</span><span class=p>&lt;</span><span class=nt>TType</span> <span class=err>|</span> <span class=na>true</span><span class=err>,</span> <span class=na>TContext</span><span class=err>,</span> <span class=na>true</span> <span class=err>|</span> <span class=na>Optionals</span><span class=err>&lt;</span><span class=na>TOut</span><span class=p>&gt;</span><span class=o>&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>this</span><span class=p>.</span><span class=nx>test</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>      <span class=nx>message</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;is-value&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nx>exclusive</span><span class=o>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nx>params</span><span class=o>:</span> <span class=p>{</span> <span class=nx>value</span><span class=o>:</span> <span class=s1>&#39;true&#39;</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>      <span class=nx>test</span><span class=p>(</span><span class=nx>value</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>isAbsent</span><span class=p>(</span><span class=nx>value</span><span class=p>)</span> <span class=o>||</span> <span class=nx>value</span> <span class=o>===</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>})</span> <span class=nx>as</span> <span class=nx>any</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>观察上述代码，我们可以通过 <code>yup.bool().isTrue()</code> 来引用。我们可以看到，其调用了 <code>BaseSchema</code> 的 <code>test</code> 方法，相关一些关键的实现如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -441,48 +231,27 @@
 </span><span class=lnt>18
 </span><span class=lnt>19
 </span><span class=lnt>20
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=nx>test</span><span class=p>(...</span><span class=nx>args</span><span class=o>:</span> <span class=nx>any</span><span class=p>[])</span> <span class=p>{</span>
-
-		<span class=k>if</span> <span class=p>(</span><span class=k>typeof</span> <span class=nx>opts</span><span class=p>.</span><span class=nx>test</span> <span class=o>!==</span> <span class=s1>&#39;function&#39;</span><span class=p>)</span>
-      <span class=k>throw</span> <span class=k>new</span> <span class=nx>TypeError</span><span class=p>(</span><span class=s1>&#39;`test` is a required parameters&#39;</span><span class=p>);</span>
-    
-    <span class=kd>let</span> <span class=nx>next</span> <span class=o>=</span> <span class=k>this</span><span class=p>.</span><span class=nx>clone</span><span class=p>();</span>
-    <span class=kd>let</span> <span class=nx>validate</span> <span class=o>=</span> <span class=nx>createValidation</span><span class=p>(</span><span class=nx>opts</span><span class=p>);</span>
-
-    <span class=nx>next</span><span class=p>.</span><span class=nx>tests</span> <span class=o>=</span> <span class=nx>next</span><span class=p>.</span><span class=nx>tests</span><span class=p>.</span><span class=nx>filter</span><span class=p>((</span><span class=nx>fn</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
-      <span class=k>if</span> <span class=p>(</span><span class=nx>fn</span><span class=p>.</span><span class=nx>OPTIONS</span><span class=p>.</span><span class=nx>name</span> <span class=o>===</span> <span class=nx>opts</span><span class=p>.</span><span class=nx>name</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>if</span> <span class=p>(</span><span class=nx>isExclusive</span><span class=p>)</span> <span class=k>return</span> <span class=kc>false</span><span class=p>;</span>
-        <span class=k>if</span> <span class=p>(</span><span class=nx>fn</span><span class=p>.</span><span class=nx>OPTIONS</span><span class=p>.</span><span class=nx>test</span> <span class=o>===</span> <span class=nx>validate</span><span class=p>.</span><span class=nx>OPTIONS</span><span class=p>.</span><span class=nx>test</span><span class=p>)</span> <span class=k>return</span> <span class=kc>false</span><span class=p>;</span>
-      <span class=p>}</span>
-      <span class=k>return</span> <span class=kc>true</span><span class=p>;</span>
-    <span class=p>});</span>
-
-    <span class=nx>next</span><span class=p>.</span><span class=nx>tests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=nx>validate</span><span class=p>);</span>
-
-    <span class=k>return</span> <span class=nx>next</span><span class=p>;</span>
-  <span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>这下就清楚了，当子类调用 <code>this.test</code> 方法的时候，会重新构建整个test链：</p>
-<ol>
-<li>clone一份当前的test集合</li>
-<li>遍历test数组，重新生成可以调用的test序列</li>
-<li>将入参新的test测试方法放入队尾</li>
-<li>返回整个test数组</li>
-</ol>
-<p><strong>小结</strong></p>
-<p>至此，已经将关键的节点链路分析完毕，有些松散，也有些凌乱，我们重新梳理一遍。通过代码可以得知，yup在处理的时候，可以分为两类:</p>
-<ul>
-<li>基本类型，比如 <code>boolean</code> <code>array</code> <code>number</code> <code>string</code> 等，这些校验比较简单，基本上是在类型判断的基础之上，添加一些边界的约束</li>
-<li>Object/Mix等复杂类型，基本上顺延基类的思路，但是关键的 <code>validate</code> 等方法都重新进行了设计。</li>
-</ul>
-<h2 id=如何使用>如何使用</h2>
-<h3 id=依赖其他字段不同>依赖其他字段不同</h3>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=nx>test</span><span class=p>(...</span><span class=nx>args</span><span class=o>:</span> <span class=nx>any</span><span class=p>[])</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=p>(</span><span class=k>typeof</span> <span class=nx>opts</span><span class=p>.</span><span class=nx>test</span> <span class=o>!==</span> <span class=s1>&#39;function&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=k>throw</span> <span class=k>new</span> <span class=nx>TypeError</span><span class=p>(</span><span class=s1>&#39;`test` is a required parameters&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=kd>let</span> <span class=nx>next</span> <span class=o>=</span> <span class=k>this</span><span class=p>.</span><span class=nx>clone</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=kd>let</span> <span class=nx>validate</span> <span class=o>=</span> <span class=nx>createValidation</span><span class=p>(</span><span class=nx>opts</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nx>next</span><span class=p>.</span><span class=nx>tests</span> <span class=o>=</span> <span class=nx>next</span><span class=p>.</span><span class=nx>tests</span><span class=p>.</span><span class=nx>filter</span><span class=p>((</span><span class=nx>fn</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=k>if</span> <span class=p>(</span><span class=nx>fn</span><span class=p>.</span><span class=nx>OPTIONS</span><span class=p>.</span><span class=nx>name</span> <span class=o>===</span> <span class=nx>opts</span><span class=p>.</span><span class=nx>name</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>isExclusive</span><span class=p>)</span> <span class=k>return</span> <span class=kc>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>fn</span><span class=p>.</span><span class=nx>OPTIONS</span><span class=p>.</span><span class=nx>test</span> <span class=o>===</span> <span class=nx>validate</span><span class=p>.</span><span class=nx>OPTIONS</span><span class=p>.</span><span class=nx>test</span><span class=p>)</span> <span class=k>return</span> <span class=kc>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nx>next</span><span class=p>.</span><span class=nx>tests</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=nx>validate</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>next</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这下就清楚了，当子类调用 <code>this.test</code> 方法的时候，会重新构建整个test链：</p><ol><li>clone一份当前的test集合</li><li>遍历test数组，重新生成可以调用的test序列</li><li>将入参新的test测试方法放入队尾</li><li>返回整个test数组</li></ol><p><strong>小结</strong></p><p>至此，已经将关键的节点链路分析完毕，有些松散，也有些凌乱，我们重新梳理一遍。通过代码可以得知，yup在处理的时候，可以分为两类:</p><ul><li>基本类型，比如 <code>boolean</code> <code>array</code> <code>number</code> <code>string</code> 等，这些校验比较简单，基本上是在类型判断的基础之上，添加一些边界的约束</li><li>Object/Mix等复杂类型，基本上顺延基类的思路，但是关键的 <code>validate</code> 等方法都重新进行了设计。</li></ul><h2 id=如何使用>如何使用</h2><h3 id=依赖其他字段不同>依赖其他字段不同</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -514,65 +283,47 @@
 </span><span class=lnt>30
 </span><span class=lnt>31
 </span><span class=lnt>32
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kr>const</span> <span class=nx>yup</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yup&#39;</span><span class=p>);</span>
-
-<span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>when</span><span class=p>(</span><span class=s1>&#39;gender&#39;</span><span class=p>,</span> <span class=p>{</span>
-    <span class=nx>is</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
-    <span class=nx>then</span><span class=o>:</span> <span class=nx>s</span> <span class=p>=&gt;</span> <span class=nx>s</span><span class=p>.</span><span class=nx>matches</span><span class=p>(</span><span class=sr>/F.*/g</span><span class=p>),</span>
-    <span class=nx>otherwise</span><span class=o>:</span> <span class=nx>s</span> <span class=p>=&gt;</span> <span class=nx>s</span><span class=p>.</span><span class=nx>matches</span><span class=p>(</span><span class=sr>/M.*/g</span><span class=p>)</span>
-  <span class=p>})</span>
-<span class=p>});</span>
-
-<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;F123&#39;</span><span class=p>,</span>
-<span class=p>}));</span>
-<span class=c1>// true
-</span><span class=c1></span>
-<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
-<span class=p>}));</span>
-<span class=c1>// false
-</span><span class=c1></span>
-<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;John&#39;</span><span class=p>,</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;M&#39;</span><span class=p>,</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
-<span class=p>}));</span>
-<span class=c1>// true
-</span></code></pre></td></tr></table>
-</div>
-</div><p>如上，我们定义了一个PersonSchema的校验规则，其中需要注意的是Id，通过when方法，根据gender性别的不同，定义了两种前缀。如果为女性F，那么要求id以F开头，如果为男性M，则要求id以M开头。</p>
-<h3 id=自定义string类型的判断规则>自定义String类型的判断规则</h3>
-<p><strong>方法1</strong>: 通过正则匹配</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kr>const</span> <span class=nx>yup</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yup&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>when</span><span class=p>(</span><span class=s1>&#39;gender&#39;</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>is</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>then</span><span class=o>:</span> <span class=nx>s</span> <span class=p>=&gt;</span> <span class=nx>s</span><span class=p>.</span><span class=nx>matches</span><span class=p>(</span><span class=sr>/F.*/g</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>    <span class=nx>otherwise</span><span class=o>:</span> <span class=nx>s</span> <span class=p>=&gt;</span> <span class=nx>s</span><span class=p>.</span><span class=nx>matches</span><span class=p>(</span><span class=sr>/M.*/g</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>})</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;F123&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}));</span>
+</span></span><span class=line><span class=cl><span class=c1>// true
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}));</span>
+</span></span><span class=line><span class=cl><span class=c1>// false
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;John&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;M&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}));</span>
+</span></span><span class=line><span class=cl><span class=c1>// true
+</span></span></span></code></pre></td></tr></table></div></div><p>如上，我们定义了一个PersonSchema的校验规则，其中需要注意的是Id，通过when方法，根据gender性别的不同，定义了两种前缀。如果为女性F，那么要求id以F开头，如果为男性M，则要求id以M开头。</p><h3 id=自定义string类型的判断规则>自定义String类型的判断规则</h3><p><strong>方法1</strong>: 通过正则匹配</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>matches</span><span class=p>(</span><span class=sr>/F.*/g</span><span class=p>),</span>
-<span class=p>});</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>方法2</strong> 通过test方法匹配</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>matches</span><span class=p>(</span><span class=sr>/F.*/g</span><span class=p>),</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>方法2</strong> 通过test方法匹配</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -593,36 +344,28 @@
 </span><span class=lnt>19
 </span><span class=lnt>20
 </span><span class=lnt>21
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kr>const</span> <span class=nx>yup</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yup&#39;</span><span class=p>);</span>
-
-<span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>test</span><span class=p>(</span><span class=s1>&#39;id&#39;</span><span class=p>,</span> <span class=nx>value</span> <span class=p>=&gt;</span> <span class=p>{</span>
-    <span class=k>return</span> <span class=nx>value</span><span class=p>.</span><span class=nx>startsWith</span><span class=p>(</span><span class=s1>&#39;F&#39;</span><span class=p>);</span>
-  <span class=p>})</span>
-<span class=p>});</span>
-
-<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;F123&#39;</span><span class=p>,</span>
-<span class=p>}));</span>
-
-<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
-<span class=p>}));</span>
-</code></pre></td></tr></table>
-</div>
-</div><h3 id=异步判断>异步判断</h3>
-<p>需要注意的，test方法传入的方法，支持异步的Async方法，在特殊情况下可以使用。比如以下代码</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kr>const</span> <span class=nx>yup</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yup&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>test</span><span class=p>(</span><span class=s1>&#39;id&#39;</span><span class=p>,</span> <span class=nx>value</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>value</span><span class=p>.</span><span class=nx>startsWith</span><span class=p>(</span><span class=s1>&#39;F&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>})</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;F123&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValidSync</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}));</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=异步判断>异步判断</h3><p>需要注意的，test方法传入的方法，支持异步的Async方法，在特殊情况下可以使用。比如以下代码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -655,47 +398,40 @@
 </span><span class=lnt>31
 </span><span class=lnt>32
 </span><span class=lnt>33
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kr>const</span> <span class=nx>yup</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yup&#39;</span><span class=p>);</span>
-
-<span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>test</span><span class=p>(</span><span class=s1>&#39;id&#39;</span><span class=p>,</span> <span class=kr>async</span> <span class=nx>value</span> <span class=p>=&gt;</span> <span class=p>{</span>
-    <span class=k>return</span> <span class=k>new</span> <span class=nb>Promise</span><span class=p>((</span><span class=nx>resolve</span><span class=p>,</span> <span class=nx>reject</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
-      <span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
-        <span class=k>if</span> <span class=p>(</span><span class=nx>value</span><span class=p>.</span><span class=nx>startsWith</span><span class=p>(</span><span class=s1>&#39;F&#39;</span><span class=p>))</span> <span class=p>{</span>
-          <span class=nx>resolve</span><span class=p>();</span>
-        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-          <span class=nx>reject</span><span class=p>();</span>
-        <span class=p>}</span>
-      <span class=p>},</span> <span class=mi>1000</span><span class=p>)</span>
-    <span class=p>})</span>
-  <span class=p>})</span>
-<span class=p>});</span>
-
-<span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValid</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;F123&#39;</span><span class=p>,</span>
-<span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>result</span> <span class=p>=&gt;</span> <span class=p>{</span>
-  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>result</span><span class=p>);</span>
-<span class=p>})</span>
-
-<span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValid</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
-  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
-  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
-<span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>result</span> <span class=p>=&gt;</span> <span class=p>{</span>
-  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>result</span><span class=p>);</span>
-<span class=p>})</span>
-</code></pre></td></tr></table>
-</div>
-</div><h3 id=判断其中子元素>判断其中子元素</h3>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kr>const</span> <span class=nx>yup</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yup&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>let</span> <span class=nx>personSchema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>4</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>().</span><span class=nx>test</span><span class=p>(</span><span class=s1>&#39;id&#39;</span><span class=p>,</span> <span class=kr>async</span> <span class=nx>value</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>new</span> <span class=nb>Promise</span><span class=p>((</span><span class=nx>resolve</span><span class=p>,</span> <span class=nx>reject</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>value</span><span class=p>.</span><span class=nx>startsWith</span><span class=p>(</span><span class=s1>&#39;F&#39;</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nx>resolve</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nx>reject</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=p>},</span> <span class=mi>1000</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>})</span>
+</span></span><span class=line><span class=cl>  <span class=p>})</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValid</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;F123&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>result</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>result</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>})</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>personSchema</span><span class=p>.</span><span class=nx>isValid</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;Lucy&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>gender</span><span class=o>:</span> <span class=s1>&#39;F&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>id</span><span class=o>:</span> <span class=s1>&#39;M123&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>result</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>result</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>})</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=判断其中子元素>判断其中子元素</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -714,33 +450,26 @@
 </span><span class=lnt>17
 </span><span class=lnt>18
 </span><span class=lnt>19
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>object</span><span class=p>({</span>
-  <span class=nx>foo</span><span class=o>:</span> <span class=nx>array</span><span class=p>().</span><span class=k>of</span><span class=p>(</span>
-    <span class=nx>object</span><span class=p>({</span>
-      <span class=nx>loose</span><span class=o>:</span> <span class=kr>boolean</span><span class=p>(),</span>
-      <span class=nx>bar</span><span class=o>:</span> <span class=nx>string</span><span class=p>().</span><span class=nx>when</span><span class=p>(</span><span class=s1>&#39;loose&#39;</span><span class=p>,</span> <span class=p>{</span>
-        <span class=nx>is</span><span class=o>:</span> <span class=kc>true</span><span class=p>,</span>
-        <span class=nx>otherwise</span><span class=o>:</span> <span class=p>(</span><span class=nx>s</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>s</span><span class=p>.</span><span class=nx>strict</span><span class=p>(),</span>
-      <span class=p>}),</span>
-    <span class=p>}),</span>
-  <span class=p>),</span>
-<span class=p>});</span>
-
-<span class=kd>let</span> <span class=nx>rootValue</span> <span class=o>=</span> <span class=p>{</span>
-  <span class=nx>foo</span><span class=o>:</span> <span class=p>[{</span> <span class=nx>bar</span><span class=o>:</span> <span class=mi>1</span> <span class=p>},</span> <span class=p>{</span> <span class=nx>bar</span><span class=o>:</span> <span class=mi>1</span><span class=p>,</span> <span class=nx>loose</span><span class=o>:</span> <span class=kc>true</span> <span class=p>}],</span>
-<span class=p>};</span>
-
-<span class=kr>await</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateAt</span><span class=p>(</span><span class=s1>&#39;foo[0].bar&#39;</span><span class=p>,</span> <span class=nx>rootValue</span><span class=p>);</span> <span class=c1>// =&gt; ValidationError: must be a string
-</span><span class=c1></span>
-<span class=kr>await</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateAt</span><span class=p>(</span><span class=s1>&#39;foo[1].bar&#39;</span><span class=p>,</span> <span class=nx>rootValue</span><span class=p>);</span> <span class=c1>// =&gt; &#39;1&#39;
-</span></code></pre></td></tr></table>
-</div>
-</div><h3 id=输出详细的错误信息>输出详细的错误信息</h3>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>object</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>foo</span><span class=o>:</span> <span class=nx>array</span><span class=p>().</span><span class=k>of</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=nx>object</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>      <span class=nx>loose</span><span class=o>:</span> <span class=kr>boolean</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>      <span class=nx>bar</span><span class=o>:</span> <span class=nx>string</span><span class=p>().</span><span class=nx>when</span><span class=p>(</span><span class=s1>&#39;loose&#39;</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>is</span><span class=o>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>otherwise</span><span class=o>:</span> <span class=p>(</span><span class=nx>s</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>s</span><span class=p>.</span><span class=nx>strict</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>      <span class=p>}),</span>
+</span></span><span class=line><span class=cl>    <span class=p>}),</span>
+</span></span><span class=line><span class=cl>  <span class=p>),</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>let</span> <span class=nx>rootValue</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>foo</span><span class=o>:</span> <span class=p>[{</span> <span class=nx>bar</span><span class=o>:</span> <span class=mi>1</span> <span class=p>},</span> <span class=p>{</span> <span class=nx>bar</span><span class=o>:</span> <span class=mi>1</span><span class=p>,</span> <span class=nx>loose</span><span class=o>:</span> <span class=kc>true</span> <span class=p>}],</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>await</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateAt</span><span class=p>(</span><span class=s1>&#39;foo[0].bar&#39;</span><span class=p>,</span> <span class=nx>rootValue</span><span class=p>);</span> <span class=c1>// =&gt; ValidationError: must be a string
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=kr>await</span> <span class=nx>schema</span><span class=p>.</span><span class=nx>validateAt</span><span class=p>(</span><span class=s1>&#39;foo[1].bar&#39;</span><span class=p>,</span> <span class=nx>rootValue</span><span class=p>);</span> <span class=c1>// =&gt; &#39;1&#39;
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=输出详细的错误信息>输出详细的错误信息</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -764,76 +493,32 @@
 </span><span class=lnt>22
 </span><span class=lnt>23
 </span><span class=lnt>24
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=kr>import</span> <span class=p>{</span> <span class=nx>setLocale</span> <span class=p>}</span> <span class=nx>from</span> <span class=s1>&#39;yup&#39;</span><span class=p>;</span>
-
-<span class=nx>setLocale</span><span class=p>({</span>
-  <span class=c1>// use constant translation keys for messages without values
-</span><span class=c1></span>  <span class=nx>mixed</span><span class=o>:</span> <span class=p>{</span>
-    <span class=k>default</span><span class=o>:</span> <span class=s1>&#39;field_invalid&#39;</span><span class=p>,</span>
-  <span class=p>},</span>
-  <span class=c1>// use functions to generate an error object that includes the value from the schema
-</span><span class=c1></span>  <span class=nx>number</span><span class=o>:</span> <span class=p>{</span>
-    <span class=nx>min</span><span class=o>:</span> <span class=p>({</span> <span class=nx>min</span> <span class=p>})</span> <span class=p>=&gt;</span> <span class=p>({</span> <span class=nx>key</span><span class=o>:</span> <span class=s1>&#39;field_too_short&#39;</span><span class=p>,</span> <span class=nx>values</span><span class=o>:</span> <span class=p>{</span> <span class=nx>min</span> <span class=p>}</span> <span class=p>}),</span>
-    <span class=nx>max</span><span class=o>:</span> <span class=p>({</span> <span class=nx>max</span> <span class=p>})</span> <span class=p>=&gt;</span> <span class=p>({</span> <span class=nx>key</span><span class=o>:</span> <span class=s1>&#39;field_too_big&#39;</span><span class=p>,</span> <span class=nx>values</span><span class=o>:</span> <span class=p>{</span> <span class=nx>max</span> <span class=p>}</span> <span class=p>}),</span>
-  <span class=p>},</span>
-<span class=p>});</span>
-
-<span class=c1>// now use Yup schemas AFTER you defined your custom dictionary
-</span><span class=c1></span><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
-  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
-  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>18</span><span class=p>),</span>
-<span class=p>});</span>
-
-<span class=nx>schema</span><span class=p>.</span><span class=nx>validate</span><span class=p>({</span> <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;jimmy&#39;</span><span class=p>,</span> <span class=nx>age</span><span class=o>:</span> <span class=mi>11</span> <span class=p>}).</span><span class=k>catch</span><span class=p>(</span><span class=kd>function</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>{</span>
-  <span class=nx>err</span><span class=p>.</span><span class=nx>name</span><span class=p>;</span> <span class=c1>// =&gt; &#39;ValidationError&#39;
-</span><span class=c1></span>  <span class=nx>err</span><span class=p>.</span><span class=nx>errors</span><span class=p>;</span> <span class=c1>// =&gt; [{ key: &#39;field_too_short&#39;, values: { min: 18 } }]
-</span><span class=c1></span><span class=p>});</span>
-</code></pre></td></tr></table>
-</div>
-</div><h2 id=whats-more>What&rsquo;s more</h2>
-<p>Yup在设计的时候，还包括了很多增强的功能，最典型的比如cast数据转换等等。但是实际上在使用的时候，我们更聚焦在数据的校验，如果校验之后不合法，需要转化，需要处理，一般会有其他的业务逻辑负责。</p>
-<p>把上面的原理大体读懂，常用的例子搞明白，就能掌握Yup。</p>
-<p><img class=lazyload src=/svg/loading.min.svg data-src=/images/wechat.png data-srcset="/images/wechat.png, /images/wechat.png 1.5x, /images/wechat.png 2x" data-sizes=auto alt=/images/wechat.png title=Banner></p>
-</div><div class=post-footer id=post-footer>
-<div class=post-info>
-<div class=post-info-line>
-<div class=post-info-mod>
-<span>更新于 2021-10-22</span>
-</div>
-<div class=post-info-license></div>
-</div>
-<div class=post-info-line>
-<div class=post-info-md></div>
-<div class=post-info-share>
-<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup data-hashtags=npm源码剖析,yup,schema,validator><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-hashtag=npm源码剖析><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i class="fab fa-hacker-news fa-fw"></i></a><a href=javascript:void(0); title="分享到 Pocket" data-sharer=pocket data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/><i class="fab fa-get-pocket fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 百度" data-sharer=baidu data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i class="fab fa-evernote fa-fw"></i></a></span>
-</div>
-</div>
-</div>
-<div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/npm%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/>npm源码剖析</a>,&nbsp;<a href=/tags/yup/>yup</a>,&nbsp;<a href=/tags/schema/>schema</a>,&nbsp;<a href=/tags/validator/>validator</a></section>
-<section>
-<span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span>
-</section>
-</div>
-<div class=post-nav><a href=/2021/10/19/20211019_uuid/ class=prev rel=prev title=npm源码剖析系列-UUID到底是什么?><i class="fas fa-angle-left fa-fw"></i>npm源码剖析系列-UUID到底是什么?</a>
-<a href=/2021/11/14/20211114_validator/ class=next rel=next title="npm源码剖析系列-validator 字符串判断神器">npm源码剖析系列-validator 字符串判断神器<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-<div id=comments><div id=valine class=comment></div><noscript>
-Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.
-</noscript></div></article></div>
-</main><footer class=footer>
-<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.89.4">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-| 京ICP备2021031730号-1
-| <script type=text/javascript src="https://v1.cnzz.com/z_stat.php?id=1280454422&web_id=1280454422"></script>
-</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2000 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>Hulk</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
-</div>
-</footer></div>
-<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部>
-<i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title=查看评论>
-<i class="fas fa-comment fa-fw"></i>
-</a>
-</div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:100},comment:{valine:{appId:"VxwliOqQ8NyjeHQAOb7BDKbM-gzGzoHsz",appKey:"XiEwWeWnlzxuQ5LSP4yfgNxs",avatar:"mp",el:"#valine",emojiCDN:"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/",emojiMaps:{100:"1f4af.png",alien:"1f47d.png",anger:"1f4a2.png",angry:"1f620.png",anguished:"1f627.png",astonished:"1f632.png",black_heart:"1f5a4.png",blue_heart:"1f499.png",blush:"1f60a.png",bomb:"1f4a3.png",boom:"1f4a5.png",broken_heart:"1f494.png",brown_heart:"1f90e.png",clown_face:"1f921.png",cold_face:"1f976.png",cold_sweat:"1f630.png",confounded:"1f616.png",confused:"1f615.png",cry:"1f622.png",crying_cat_face:"1f63f.png",cupid:"1f498.png",dash:"1f4a8.png",disappointed:"1f61e.png",disappointed_relieved:"1f625.png",dizzy:"1f4ab.png",dizzy_face:"1f635.png",drooling_face:"1f924.png",exploding_head:"1f92f.png",expressionless:"1f611.png",face_vomiting:"1f92e.png",face_with_cowboy_hat:"1f920.png",face_with_hand_over_mouth:"1f92d.png",face_with_head_bandage:"1f915.png",face_with_monocle:"1f9d0.png",face_with_raised_eyebrow:"1f928.png",face_with_rolling_eyes:"1f644.png",face_with_symbols_on_mouth:"1f92c.png",face_with_thermometer:"1f912.png",fearful:"1f628.png",flushed:"1f633.png",frowning:"1f626.png",ghost:"1f47b.png",gift_heart:"1f49d.png",green_heart:"1f49a.png",grimacing:"1f62c.png",grin:"1f601.png",grinning:"1f600.png",hankey:"1f4a9.png",hear_no_evil:"1f649.png",heart:"2764-fe0f.png",heart_decoration:"1f49f.png",heart_eyes:"1f60d.png",heart_eyes_cat:"1f63b.png",heartbeat:"1f493.png",heartpulse:"1f497.png",heavy_heart_exclamation_mark_ornament:"2763-fe0f.png",hole:"1f573-fe0f.png",hot_face:"1f975.png",hugging_face:"1f917.png",hushed:"1f62f.png",imp:"1f47f.png",innocent:"1f607.png",japanese_goblin:"1f47a.png",japanese_ogre:"1f479.png",joy:"1f602.png",joy_cat:"1f639.png",kiss:"1f48b.png",kissing:"1f617.png",kissing_cat:"1f63d.png",kissing_closed_eyes:"1f61a.png",kissing_heart:"1f618.png",kissing_smiling_eyes:"1f619.png",laughing:"1f606.png",left_speech_bubble:"1f5e8-fe0f.png",love_letter:"1f48c.png",lying_face:"1f925.png",mask:"1f637.png",money_mouth_face:"1f911.png",nauseated_face:"1f922.png",nerd_face:"1f913.png",neutral_face:"1f610.png",no_mouth:"1f636.png",open_mouth:"1f62e.png",orange_heart:"1f9e1.png",partying_face:"1f973.png",pensive:"1f614.png",persevere:"1f623.png",pleading_face:"1f97a.png",pouting_cat:"1f63e.png",purple_heart:"1f49c.png",rage:"1f621.png",relaxed:"263a-fe0f.png",relieved:"1f60c.png",revolving_hearts:"1f49e.png",right_anger_bubble:"1f5ef-fe0f.png",robot_face:"1f916.png",rolling_on_the_floor_laughing:"1f923.png",scream:"1f631.png",scream_cat:"1f640.png",see_no_evil:"1f648.png",shushing_face:"1f92b.png",skull:"1f480.png",skull_and_crossbones:"2620-fe0f.png",sleeping:"1f634.png",sleepy:"1f62a.png",slightly_frowning_face:"1f641.png",slightly_smiling_face:"1f642.png",smile:"1f604.png",smile_cat:"1f638.png",smiley:"1f603.png",smiley_cat:"1f63a.png",smiling_face_with_3_hearts:"1f970.png",smiling_imp:"1f608.png",smirk:"1f60f.png",smirk_cat:"1f63c.png",sneezing_face:"1f927.png",sob:"1f62d.png",space_invader:"1f47e.png",sparkling_heart:"1f496.png",speak_no_evil:"1f64a.png",speech_balloon:"1f4ac.png","star-struck":"1f929.png",stuck_out_tongue:"1f61b.png",stuck_out_tongue_closed_eyes:"1f61d.png",stuck_out_tongue_winking_eye:"1f61c.png",sunglasses:"1f60e.png",sweat:"1f613.png",sweat_drops:"1f4a6.png",sweat_smile:"1f605.png",thinking_face:"1f914.png",thought_balloon:"1f4ad.png",tired_face:"1f62b.png",triumph:"1f624.png",two_hearts:"1f495.png",unamused:"1f612.png",upside_down_face:"1f643.png",weary:"1f629.png",white_frowning_face:"2639-fe0f.png",white_heart:"1f90d.png",wink:"1f609.png",woozy_face:"1f974.png",worried:"1f61f.png",yawning_face:"1f971.png",yellow_heart:"1f49b.png",yum:"1f60b.png",zany_face:"1f92a.png",zipper_mouth_face:"1f910.png",zzz:"1f4a4.png"},enableQQ:!1,highlight:!0,lang:"zh-cn",pageSize:10,placeholder:"你的评论 ...",recordIP:!0,serverURLs:"https://leancloudblog.bighulk.net",visitor:!0}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"PASDMWALPK",algoliaIndex:"index.zh-cn",algoliaSearchKey:"b42948e51daaa93df92381c8e2ac0f93",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script></body>
-</html>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-jsx data-lang=jsx><span class=line><span class=cl><span class=kr>import</span> <span class=p>{</span> <span class=nx>setLocale</span> <span class=p>}</span> <span class=nx>from</span> <span class=s1>&#39;yup&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>setLocale</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// use constant translation keys for messages without values
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>mixed</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>default</span><span class=o>:</span> <span class=s1>&#39;field_invalid&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// use functions to generate an error object that includes the value from the schema
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>number</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>min</span><span class=o>:</span> <span class=p>({</span> <span class=nx>min</span> <span class=p>})</span> <span class=p>=&gt;</span> <span class=p>({</span> <span class=nx>key</span><span class=o>:</span> <span class=s1>&#39;field_too_short&#39;</span><span class=p>,</span> <span class=nx>values</span><span class=o>:</span> <span class=p>{</span> <span class=nx>min</span> <span class=p>}</span> <span class=p>}),</span>
+</span></span><span class=line><span class=cl>    <span class=nx>max</span><span class=o>:</span> <span class=p>({</span> <span class=nx>max</span> <span class=p>})</span> <span class=p>=&gt;</span> <span class=p>({</span> <span class=nx>key</span><span class=o>:</span> <span class=s1>&#39;field_too_big&#39;</span><span class=p>,</span> <span class=nx>values</span><span class=o>:</span> <span class=p>{</span> <span class=nx>max</span> <span class=p>}</span> <span class=p>}),</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// now use Yup schemas AFTER you defined your custom dictionary
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>let</span> <span class=nx>schema</span> <span class=o>=</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>object</span><span class=p>().</span><span class=nx>shape</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>string</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>age</span><span class=o>:</span> <span class=nx>yup</span><span class=p>.</span><span class=nx>number</span><span class=p>().</span><span class=nx>min</span><span class=p>(</span><span class=mi>18</span><span class=p>),</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>schema</span><span class=p>.</span><span class=nx>validate</span><span class=p>({</span> <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;jimmy&#39;</span><span class=p>,</span> <span class=nx>age</span><span class=o>:</span> <span class=mi>11</span> <span class=p>}).</span><span class=k>catch</span><span class=p>(</span><span class=kd>function</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>err</span><span class=p>.</span><span class=nx>name</span><span class=p>;</span> <span class=c1>// =&gt; &#39;ValidationError&#39;
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>err</span><span class=p>.</span><span class=nx>errors</span><span class=p>;</span> <span class=c1>// =&gt; [{ key: &#39;field_too_short&#39;, values: { min: 18 } }]
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>});</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=whats-more>What&rsquo;s more</h2><p>Yup在设计的时候，还包括了很多增强的功能，最典型的比如cast数据转换等等。但是实际上在使用的时候，我们更聚焦在数据的校验，如果校验之后不合法，需要转化，需要处理，一般会有其他的业务逻辑负责。</p><p>把上面的原理大体读懂，常用的例子搞明白，就能掌握Yup。</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/wechat.png data-srcset="/images/wechat.png, /images/wechat.png 1.5x, /images/wechat.png 2x" data-sizes=auto alt=/images/wechat.png title=Banner></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-10-22</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup data-hashtags=npm源码剖析,yup,schema,validator><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-hashtag=npm源码剖析><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i class="fab fa-hacker-news fa-fw"></i></a><a href=javascript:void(0); title="分享到 Pocket" data-sharer=pocket data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/><i class="fab fa-get-pocket fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 百度" data-sharer=baidu data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://blog.bighulk.net/2021/10/22/20211022_yup/ data-title=npm源码剖析系列-Schema校验神器之Yup><i class="fab fa-evernote fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/npm%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/>npm源码剖析</a>,&nbsp;<a href=/tags/yup/>yup</a>,&nbsp;<a href=/tags/schema/>schema</a>,&nbsp;<a href=/tags/validator/>validator</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2021/10/19/20211019_uuid/ class=prev rel=prev title=npm源码剖析系列-UUID到底是什么?><i class="fas fa-angle-left fa-fw"></i>npm源码剖析系列-UUID到底是什么?</a>
+<a href=/2021/11/14/20211114_validator/ class=next rel=next title="npm源码剖析系列-validator 字符串判断神器">npm源码剖析系列-validator 字符串判断神器<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.97.3">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+| <a href=https://beian.miit.gov.cn// target=_blank rel="noopener noreffer">京ICP备2021031730号-1</a>
+| <script type=text/javascript src="https://v1.cnzz.com/z_stat.php?id=1280454422&web_id=1280454422"></script></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2000 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>Hulk</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:100},comment:{valine:{appId:"VxwliOqQ8NyjeHQAOb7BDKbM-gzGzoHsz",appKey:"XiEwWeWnlzxuQ5LSP4yfgNxs",avatar:"mp",el:"#valine",emojiCDN:"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/",emojiMaps:{100:"1f4af.png",alien:"1f47d.png",anger:"1f4a2.png",angry:"1f620.png",anguished:"1f627.png",astonished:"1f632.png",black_heart:"1f5a4.png",blue_heart:"1f499.png",blush:"1f60a.png",bomb:"1f4a3.png",boom:"1f4a5.png",broken_heart:"1f494.png",brown_heart:"1f90e.png",clown_face:"1f921.png",cold_face:"1f976.png",cold_sweat:"1f630.png",confounded:"1f616.png",confused:"1f615.png",cry:"1f622.png",crying_cat_face:"1f63f.png",cupid:"1f498.png",dash:"1f4a8.png",disappointed:"1f61e.png",disappointed_relieved:"1f625.png",dizzy:"1f4ab.png",dizzy_face:"1f635.png",drooling_face:"1f924.png",exploding_head:"1f92f.png",expressionless:"1f611.png",face_vomiting:"1f92e.png",face_with_cowboy_hat:"1f920.png",face_with_hand_over_mouth:"1f92d.png",face_with_head_bandage:"1f915.png",face_with_monocle:"1f9d0.png",face_with_raised_eyebrow:"1f928.png",face_with_rolling_eyes:"1f644.png",face_with_symbols_on_mouth:"1f92c.png",face_with_thermometer:"1f912.png",fearful:"1f628.png",flushed:"1f633.png",frowning:"1f626.png",ghost:"1f47b.png",gift_heart:"1f49d.png",green_heart:"1f49a.png",grimacing:"1f62c.png",grin:"1f601.png",grinning:"1f600.png",hankey:"1f4a9.png",hear_no_evil:"1f649.png",heart:"2764-fe0f.png",heart_decoration:"1f49f.png",heart_eyes:"1f60d.png",heart_eyes_cat:"1f63b.png",heartbeat:"1f493.png",heartpulse:"1f497.png",heavy_heart_exclamation_mark_ornament:"2763-fe0f.png",hole:"1f573-fe0f.png",hot_face:"1f975.png",hugging_face:"1f917.png",hushed:"1f62f.png",imp:"1f47f.png",innocent:"1f607.png",japanese_goblin:"1f47a.png",japanese_ogre:"1f479.png",joy:"1f602.png",joy_cat:"1f639.png",kiss:"1f48b.png",kissing:"1f617.png",kissing_cat:"1f63d.png",kissing_closed_eyes:"1f61a.png",kissing_heart:"1f618.png",kissing_smiling_eyes:"1f619.png",laughing:"1f606.png",left_speech_bubble:"1f5e8-fe0f.png",love_letter:"1f48c.png",lying_face:"1f925.png",mask:"1f637.png",money_mouth_face:"1f911.png",nauseated_face:"1f922.png",nerd_face:"1f913.png",neutral_face:"1f610.png",no_mouth:"1f636.png",open_mouth:"1f62e.png",orange_heart:"1f9e1.png",partying_face:"1f973.png",pensive:"1f614.png",persevere:"1f623.png",pleading_face:"1f97a.png",pouting_cat:"1f63e.png",purple_heart:"1f49c.png",rage:"1f621.png",relaxed:"263a-fe0f.png",relieved:"1f60c.png",revolving_hearts:"1f49e.png",right_anger_bubble:"1f5ef-fe0f.png",robot_face:"1f916.png",rolling_on_the_floor_laughing:"1f923.png",scream:"1f631.png",scream_cat:"1f640.png",see_no_evil:"1f648.png",shushing_face:"1f92b.png",skull:"1f480.png",skull_and_crossbones:"2620-fe0f.png",sleeping:"1f634.png",sleepy:"1f62a.png",slightly_frowning_face:"1f641.png",slightly_smiling_face:"1f642.png",smile:"1f604.png",smile_cat:"1f638.png",smiley:"1f603.png",smiley_cat:"1f63a.png",smiling_face_with_3_hearts:"1f970.png",smiling_imp:"1f608.png",smirk:"1f60f.png",smirk_cat:"1f63c.png",sneezing_face:"1f927.png",sob:"1f62d.png",space_invader:"1f47e.png",sparkling_heart:"1f496.png",speak_no_evil:"1f64a.png",speech_balloon:"1f4ac.png","star-struck":"1f929.png",stuck_out_tongue:"1f61b.png",stuck_out_tongue_closed_eyes:"1f61d.png",stuck_out_tongue_winking_eye:"1f61c.png",sunglasses:"1f60e.png",sweat:"1f613.png",sweat_drops:"1f4a6.png",sweat_smile:"1f605.png",thinking_face:"1f914.png",thought_balloon:"1f4ad.png",tired_face:"1f62b.png",triumph:"1f624.png",two_hearts:"1f495.png",unamused:"1f612.png",upside_down_face:"1f643.png",weary:"1f629.png",white_frowning_face:"2639-fe0f.png",white_heart:"1f90d.png",wink:"1f609.png",woozy_face:"1f974.png",worried:"1f61f.png",yawning_face:"1f971.png",yellow_heart:"1f49b.png",yum:"1f60b.png",zany_face:"1f92a.png",zipper_mouth_face:"1f910.png",zzz:"1f4a4.png"},enableQQ:!1,highlight:!0,lang:"zh-cn",pageSize:10,placeholder:"你的评论 ...",recordIP:!0,serverURLs:"https://leancloudblog.bighulk.net",visitor:!0}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"PASDMWALPK",algoliaIndex:"index.zh-cn",algoliaSearchKey:"b42948e51daaa93df92381c8e2ac0f93",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
