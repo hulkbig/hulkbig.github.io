@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国电南瑞（600406.SS）：雅鲁藏布江水电站项目或推动长期每股收益增长约4%+；布局全面受益标的国电南瑞</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 0.8rem;
+        }
+
+        .meta-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .nav-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 101;
+            font-size: 1.2rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 320px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 102;
+            overflow-y: auto;
+        }
+
+        .nav-menu.active {
+            right: 0;
+        }
+
+        .nav-header {
+            background: #1e3c72;
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .nav-content {
+            padding: 1rem;
+        }
+
+        .nav-content ul {
+            list-style: none;
+        }
+
+        .nav-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-content a {
+            color: #333;
+            text-decoration: none;
+            padding: 0.8rem;
+            display: block;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-content a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 101;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .main-content {
+            padding: 1.5rem 1rem;
+        }
+
+        .article {
+            max-width: 100%;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: #1e3c72;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        h3 {
+            color: #2a5298;
+            font-size: 1.1rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-left: 4px solid #1e3c72;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            min-width: 300px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        td:last-child, th:last-child {
+            text-align: right;
+        }
+
+        .image-container {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.02);
+        }
+
+        .image-caption {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .financial-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .financial-summary h3 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .risk-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .risk-section h3 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 2rem 1rem;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .key-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: #1e3c72;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .timeline-table {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                padding: 1rem 0.8rem;
+            }
+            
+            .key-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 0.6rem 0.4rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>国电南瑞（600406.SS）：雅鲁藏布江水电站项目或推动长期每股收益增长约4%+；布局全面受益标的国电南瑞</h1>
+            <div class="meta-info">
+                <div><strong>杜杰奎琳</strong></div>
+                <div>2025年7月22日 | 香港时间上午7:39</div>
+            </div>
+        </header>
+
+        <button class="nav-toggle" onclick="toggleNav()">☰</button>
+        
+        <div class="nav-overlay" onclick="closeNav()"></div>
+        
+        <nav class="nav-menu">
+            <div class="nav-header">目录导航</div>
+            <div class="nav-content">
+                <ul>
+                    <li><a href="#overview" onclick="closeNav()">项目概述</a></li>
+                    <li><a href="#water-control" onclick="closeNav()">水电控制系统</a></li>
+                    <li><a href="#uhv-business" onclick="closeNav()">特高压业务</a></li>
+                    <li><a href="#revenue-impact" onclick="closeNav()">收入影响测算</a></li>
+                    <li><a href="#capacity-comparison" onclick="closeNav()">装机容量对比</a></li>
+                    <li><a href="#investment-comparison" onclick="closeNav()">投资对比</a></li>
+                    <li><a href="#timeline" onclick="closeNav()">项目时间线</a></li>
+                    <li><a href="#market-share" onclick="closeNav()">市场份额</a></li>
+                    <li><a href="#target-price" onclick="closeNav()">目标价与风险</a></li>
+                    <li><a href="#financial-summary" onclick="closeNav()">财务摘要</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <article class="article">
+                <section id="overview" class="section">
+                    <div class="highlight-box">
+                        <p>2025年7月19日，中国正式启动筹划已久的雅鲁藏布江水电站项目，此前该项目已于2024年12月获中央政府批准。这标志着全球最大水电开发工程的启动——无论是装机规模（超60GW）还是投资总额（公告显示约15年总投资1.2万亿元人民币），均超越甚至达到三峡工程的三倍。该项目年均投资约800亿元，相当于2024年中国发电投资（11,690亿元）的7%和电网投资（6,080亿元）的13%。</p>
+                    </div>
+                    
+                    <p>尽管雅鲁藏布江项目细节尚待披露，鉴于国电南瑞在水电控制技术领域的绝对优势地位，我们认为其将成为全面受益者。若国电南瑞被确认为项目供应商，我们的分析显示，该项目有望推动公司2030年后的长期每股收益增长约4%+，主要受益于水电控制系统、特高压换流阀及变电站二次设备的供应机遇。国电南瑞当前在水电控制产品领域占据约70%市场份额，特高压换流阀产品市占率达37%，二次设备市占率约34-56%，相关变电站需求或带来增量收益，但参照三峡工程时间表，收入/利润提振预计在2030年后实现。</p>
+
+                    <div class="image-container">
+                        <img loading="lazy" src="image004.png" alt="电力电网业务模式图及国电南瑞产品市场份额" onclick="openModal(this)">
+                        <div class="image-caption">电力电网业务模式图及国电南瑞产品市场份额</div>
+                    </div>
+                </section>
+
+                <section id="water-control" class="section">
+                    <h2>水电控制系统</h2>
+                    <p><strong>水电控制系统</strong>：基于184万元/GW的预估单价及70%的平均市占率，我们测算国电南瑞水电控制系统总营收机会约77亿元（对比2024年板块收入约18亿元）。预计相关收入将在至少五年后开始兑现，并分多年实现。</p>
+                </section>
+
+                <section id="uhv-business" class="section">
+                    <h2>特高压业务潜在增量显著（预估年投资达2024年特高压投资的32%）</h2>
+                    <p>在估算雅鲁藏布江项目特高压投资时，我们认为白鹤滩项目比三峡工程更具参考价值。因三峡工程采用高压线路而非特高压：1）三峡建设时期特高压技术尚未成熟；2）输电距离过短导致特高压经济性不足。而雅鲁藏布江项目外送通道预计采用特高压线路，参照白鹤滩项目16GW装机对应580亿元输电投资，我们测算60+GW装机总投资约2,160亿元。考虑到雅鲁藏布江项目规模及建设周期，假设特高压分多期建设、周期约十年，则年均特高压投资约220亿元，相当于2024年全国电网投资的4%及特高压投资的32%。对国电南瑞而言，基于设备占特高压投资52%、换流阀占设备投资20%的假设，我们预估特高压换流阀将带来79亿元总收入。</p>
+                </section>
+
+                <section id="revenue-impact" class="section">
+                    <h3>表1：国电南瑞收入及每股收益影响测算</h3>
+                    <div class="table-container">
+                        <div class="table-wrapper"><table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>变量</th>
+                                    <th>说明</th>
+                                    <th>数值</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>a</strong></td>
+                                    <td>雅鲁藏布江项目装机容量（GW）</td>
+                                    <td>60</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>b</strong></td>
+                                    <td>2024年国电南瑞水电控制收入（百万元）</td>
+                                    <td>1,800</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>c</strong></td>
+                                    <td>2024年全国新增水电装机（GW）</td>
+                                    <td>14</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>d</strong></td>
+                                    <td>水电控制领域市占率</td>
+                                    <td>70%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>e</strong></td>
+                                    <td>单价（百万元/GW）= b/(c·d)</td>
+                                    <td>184</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>f</strong></td>
+                                    <td>雅鲁藏布江控制系统预估收入（百万元）= a·d·e</td>
+                                    <td>7,714</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>预期时间线</td>
+                                    <td>5年以上</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>g</strong></td>
+                                    <td>雅鲁藏布江特高压投资预估（十亿元）</td>
+                                    <td>216</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>h</strong></td>
+                                    <td>设备投资占特高压比例</td>
+                                    <td>52%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>i</strong></td>
+                                    <td>换流阀占设备投资比例</td>
+                                    <td>20%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>j</strong></td>
+                                    <td>换流阀领域市占率</td>
+                                    <td>35%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>k</strong></td>
+                                    <td>特高压收入预估（百万元）= g·h·i·j·1000</td>
+                                    <td>7,862</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>预期时间线</td>
+                                    <td>6年以上</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>l</strong></td>
+                                    <td>十年期年均收入（百万元）= (f+k)/10</td>
+                                    <td>1,558</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>m</strong></td>
+                                    <td>2030年国电南瑞收入预估（百万元）</td>
+                                    <td>103,405</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>n</strong></td>
+                                    <td>对2030年后收入的提振 = l/m</td>
+                                    <td>3%+</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>因特高压产品毛利率较高，对2030年后每股收益提振</td>
+                                    <td>4%+</td>
+                                </tr>
+                            </tbody>
+                        </table></div>
+                    </div>
+                </section>
+
+                <section id="capacity-comparison" class="section">
+                    <h3>表2：发电装机容量对比</h3>
+                    <div class="key-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">60.0 GW</div>
+                            <div class="metric-label">雅鲁藏布江项目</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">22.5 GW</div>
+                            <div class="metric-label">三峡工程</div>
+                        </div>
+                    </div>
+                    <div class="metric-card" style="margin-top: 1rem;">
+                        <div class="metric-value">16.0 GW</div>
+                        <div class="metric-label">白鹤滩项目</div>
+                    </div>
+                </section>
+
+                <section id="investment-comparison" class="section">
+                    <h3>表3：输电投资对比</h3>
+                    <div class="table-container comparison-table">
+                        <div class="table-wrapper"><table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>项目</th>
+                                    <th>输电投资（十亿元）</th>
+                                    <th>占2024年电网投资比例</th>
+                                    <th>占2024年特高压投资比例</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>雅鲁藏布江</td>
+                                    <td>216</td>
+                                    <td>4%</td>
+                                    <td>32%</td>
+                                </tr>
+                                <tr>
+                                    <td>三峡</td>
+                                    <td>35</td>
+                                    <td>不适用</td>
+                                    <td>不适用</td>
+                                </tr>
+                                <tr>
+                                    <td>白鹤滩</td>
+                                    <td>58</td>
+                                    <td>不适用</td>
+                                    <td>不适用</td>
+                                </tr>
+                            </tbody>
+                        </table></div>
+                    </div>
+                </section>
+
+                <section id="timeline" class="section">
+                    <h3>表4：项目时间线对比</h3>
+                    <div class="table-container timeline-table">
+                        <div class="table-wrapper"><table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>雅鲁藏布江项目</th>
+                                    <th>三峡工程</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>T+0</strong>：2024年12月中央批准</td>
+                                    <td><strong>T+0</strong>：1992年4月中央批准</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>T+0</strong>：2025年7月19日西藏开工</td>
+                                    <td><strong>T+0</strong>：1994年12月14日开工</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>T+3</strong>：2028年水轮机组招标启动</td>
+                                    <td><strong>T+3</strong>：1997年6月左岸机组招标（14台）</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>T+4</strong>：2029年控制系统招标</td>
+                                    <td><strong>T+8</strong>：2002年11月截流完成</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>T+5</strong>：2030年特高压建设启动</td>
+                                    <td><strong>T+9</strong>：2003年5月高压线路（宜常线）投运</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>T+9</strong>：2034年首台机组投运</td>
+                                    <td><strong>T+9</strong>：2003年7月首台机组投运</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>T+15</strong>：2040年分期竣工</td>
+                                    <td><strong>T+9</strong>：2003年10月右岸机组招标（12台）</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><strong>T+9</strong>：2003年12月高压线路（宜惠线）投运</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><strong>T+18</strong>：2012年7月全面竣工</td>
+                                </tr>
+                            </tbody>
+                        </table></div>
+                    </div>
+                </section>
+
+                <section id="market-share" class="section">
+                    <h3>表5：国电南瑞核心产品市占率</h3>
+                    <div class="table-container">
+                        <div class="table-wrapper"><table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>产品</th>
+                                    <th>市占率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>水电控制产品</td>
+                                    <td>70%</td>
+                                </tr>
+                                <tr>
+                                    <td>特高压换流阀产品</td>
+                                    <td>37%</td>
+                                </tr>
+                                <tr>
+                                    <td>二次设备</td>
+                                    <td>34-56%</td>
+                                </tr>
+                            </tbody>
+                        </table></div>
+                    </div>
+                </section>
+
+                <section id="target-price" class="section">
+                    <div class="risk-section">
+                        <h3>目标价风险与方法论</h3>
+                        <p>12个月目标价31.8元基于25倍2026年预期市盈率。</p>
+                        <p><strong>主要风险：</strong></p>
+                        <ol>
+                            <li>财政支持及国家电网2025年预算低于预期</li>
+                            <li>特高压项目审批进度滞后于公布计划</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section id="financial-summary" class="section">
+                    <div class="financial-summary">
+                        <h3>财务摘要</h3>
+                        <div class="table-container">
+                            <div class="table-wrapper"><table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>指标</th>
+                                        <th>2024年</th>
+                                        <th>2025E</th>
+                                        <th>2026E</th>
+                                        <th>2027E</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>收入（百万元）</strong></td>
+                                        <td>57,417.3</td>
+                                        <td>64,884.9</td>
+                                        <td>72,353.7</td>
+                                        <td>78,439.6</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>EBITDA（百万元）</strong></td>
+                                        <td>9,520.7</td>
+                                        <td>10,984.9</td>
+                                        <td>12,702.4</td>
+                                        <td>13,977.2</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>每股收益（元）</strong></td>
+                                        <td>0.95</td>
+                                        <td>1.12</td>
+                                        <td>1.27</td>
+                                        <td>1.40</td>
+                                    </tr>
